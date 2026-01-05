@@ -1,0 +1,59 @@
+class HomePage {
+  get yourFeedLink() {
+    return cy.get("a.nav-link").contains("Your Feed");
+  }
+
+  get globalFeedLink() {
+    return cy.get("a.nav-link").contains("Global Feed");
+  }
+
+  get articlePreviewList() {
+    return cy.get("app-article-preview");
+  }
+
+  get popularTagList() {
+    return cy.get(".sidebar .tag-list .tag-pill");
+  }
+
+  visit() {
+    cy.visit("/");
+  }
+
+  getArticlePreviewItem(title: string) {
+    return this.articlePreviewList
+      .filter(`:contains("${title}")`)
+      .should("be.visible");
+  }
+
+  openArticle(title: string) {
+    this.getArticlePreviewItem(title).find(".preview-link").click();
+  }
+
+  getAuthor(title: string) {
+    this.getArticlePreviewItem(title).find(".author");
+  }
+
+  clickAuthor(title: string) {
+    this.getArticlePreviewItem(title).find(".author").click();
+  }
+
+  getFavoriteButton(title: string) {
+    return this.getArticlePreviewItem(title).find("app-favorite-button button");
+  }
+
+  toggleFavorite(title: string) {
+    this.getArticlePreviewItem(title)
+      .find("app-favorite-button button")
+      .click();
+  }
+
+  getTags(title: string) {
+    return this.getArticlePreviewItem(title).find(".tag-list li");
+  }
+
+  getArticlesByTag(tagName: string) {
+    this.popularTagList.filter(`:contains("${tagName}")`).click();
+  }
+}
+
+export default HomePage;
