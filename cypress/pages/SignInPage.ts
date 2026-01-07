@@ -1,4 +1,4 @@
-class LoginPage {
+class SignInPage {
   get emailInput() {
     return cy.get("input[placeholder='Email']");
   }
@@ -15,9 +15,17 @@ class LoginPage {
     cy.visit("/login");
   }
 
-  fillLoginForm() {
-    this.emailInput.type("fadidajunaedy@gmail.com");
-    this.passwordInput.type("qq332211");
+  fillEmail(email: string) {
+    this.emailInput.type(email);
+  }
+
+  fillPassword(password: string) {
+    this.passwordInput.type(password);
+  }
+
+  fillLoginForm(email: string, password: string) {
+    this.emailInput.type(email);
+    this.passwordInput.type(password);
   }
 
   submit() {
@@ -25,4 +33,4 @@ class LoginPage {
   }
 }
 
-export default LoginPage;
+export default SignInPage;
