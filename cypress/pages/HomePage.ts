@@ -1,4 +1,12 @@
+import Navbar from "./components/Navbar";
+
 class HomePage {
+  readonly navbar: Navbar;
+
+  constructor() {
+    this.navbar = new Navbar();
+  }
+
   get yourFeedLink() {
     return cy.get("a.nav-link").contains("Your Feed");
   }

@@ -4,7 +4,7 @@ class SignInPage {
   }
 
   get passwordInput() {
-    return cy.get("input[placeholder='Pasword']");
+    return cy.get("input[placeholder='Password']");
   }
 
   get signInButton() {
