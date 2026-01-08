@@ -16,7 +16,7 @@ class HomePage {
   }
 
   get articlePreviewList() {
-    return cy.get("app-article-preview");
+    return cy.get(".article-preview");
   }
 
   get popularTagList() {
@@ -45,8 +45,10 @@ class HomePage {
     this.getArticlePreviewItem(title).find(".author").click();
   }
 
-  getFavoriteButton(title: string) {
-    return this.getArticlePreviewItem(title).find("app-favorite-button button");
+  getFavoriteCount(title: string) {
+    return this.getArticlePreviewItem(title)
+      .find("app-favorite-button button")
+      .invoke("text");
   }
 
   toggleFavorite(title: string) {
