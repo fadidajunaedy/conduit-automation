@@ -33,6 +33,14 @@ class HomePage {
       .should("be.visible");
   }
 
+  clickYourFeedLink() {
+    this.yourFeedLink.click();
+  }
+
+  clickGlobalFeedLink() {
+    this.globalFeedLink.click();
+  }
+
   openArticle(title: string) {
     this.getArticlePreviewItem(title).find(".preview-link").click();
   }
