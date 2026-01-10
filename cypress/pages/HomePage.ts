@@ -43,7 +43,7 @@ class HomePage {
 
   getArticleSlug(title: string) {
     return this.getArticlePreviewItem(title)
-      .find("a")
+      .find(".preview-link")
       .invoke("attr", "href")
       .then((href) => {
         return href.replace("/article/", "");
@@ -62,10 +62,16 @@ class HomePage {
     this.getArticlePreviewItem(title).find(".author").click();
   }
 
+  getFavoriteButton(title: string) {
+    return this.getArticlePreviewItem(title).find("app-favorite-button button");
+  }
+
   getFavoriteCount(title: string) {
-    return this.getArticlePreviewItem(title)
-      .find("app-favorite-button button")
-      .invoke("text");
+    return this.getFavoriteButton(title)
+      .invoke("text")
+      .then((text) => {
+        return parseInt(text.trim());
+      });
   }
 
   toggleFavorite(title: string) {
