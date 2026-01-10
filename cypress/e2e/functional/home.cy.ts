@@ -47,19 +47,9 @@ describe("Home Page - Guest State", () => {
   });
 });
 
-describe("Home Page - Authenticated State", () => {
-  let authToken: string;
-
-  before(() => {
-    const requestManager = new RequestManager();
-    requestManager.getAuthToken("email@test.com", "password").then((token) => {
-      cy.log("Token received:", token);
-      authToken = token;
-    });
-  });
-
+describe("Home Page - Authenticated State", function () {
   beforeEach(() => {
-    window.localStorage.setItem("jwtToken", authToken);
+    cy.login("email@test.com", "password");
     homePage.visit();
   });
 
@@ -133,18 +123,8 @@ describe("Home Page - Authenticated State", () => {
 });
 
 describe("Home Page - Functional Logic", () => {
-  let authToken: string;
-
-  before(() => {
-    const requestManager = new RequestManager();
-    requestManager.getAuthToken("email@test.com", "password").then((token) => {
-      cy.log("Token received:", token);
-      authToken = token;
-    });
-  });
-
   beforeEach(() => {
-    window.localStorage.setItem("jwtToken", authToken);
+    cy.login("email@test.com", "password");
     homePage.visit();
   });
 
