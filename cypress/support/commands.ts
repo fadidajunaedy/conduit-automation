@@ -7,7 +7,7 @@ declare namespace Cypress {
 
 Cypress.Commands.add("addFavoriteArticle", (slug) => {
   cy.window().then((window) => {
-    const authToken = window.localStorage.getItem("jtwToken");
+    const authToken = window.localStorage.getItem("jwtToken");
     cy.request({
       method: "POST",
       url: `${Cypress.env("apiUrl")}/articles/${slug}/favorite`,
@@ -19,7 +19,7 @@ Cypress.Commands.add("addFavoriteArticle", (slug) => {
 
 Cypress.Commands.add("removeFavoriteArticle", (slug) => {
   cy.window().then((window) => {
-    const authToken = window.localStorage.getItem("jtwToken");
+    const authToken = window.localStorage.getItem("jwtToken");
     cy.request({
       method: "DELETE",
       url: `${Cypress.env("apiUrl")}/articles/${slug}/favorite`,
