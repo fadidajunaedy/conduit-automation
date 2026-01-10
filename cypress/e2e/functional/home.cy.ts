@@ -1,5 +1,4 @@
 import HomePage from "../../pages/HomePage";
-import RequestManager from "../../utils/requestManager";
 
 const homePage: HomePage = new HomePage();
 const targetArticle =
