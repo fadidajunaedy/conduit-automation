@@ -60,7 +60,7 @@ describe.only("Home Page - Authenticated State", () => {
     homePage.yourFeedLink.should("exist");
   });
 
-  it.only("Should allow user to toggle 'Favorite' (Add Favorite)", () => {
+  it("Should allow user to toggle 'Favorite' (Add Favorite)", () => {
     cy.intercept("POST", "**/favorite").as("addFavorite");
 
     homePage.getArticleSlug(targetArticle).then((slug) => {
@@ -79,6 +79,29 @@ describe.only("Home Page - Authenticated State", () => {
       homePage.getFavoriteCount(targetArticle).then((newNumber) => {
         expect(newNumber).to.be.greaterThan(initialNumber);
         expect(newNumber).to.equal(initialNumber + 1);
+      });
+    });
+  });
+
+  it.only("Should allow user to toggle 'Favorite' (Remove Favorite)", () => {
+    cy.intercept("DELETE", "**/favorite").as("removeFavorite");
+
+    homePage.getArticleSlug(targetArticle).then((slug) => {
+      cy.addFavoriteArticle(slug);
+    });
+
+    cy.reload();
+
+    homePage
+      .getFavoriteButton(targetArticle)
+      .should("have.class", "btn-primary");
+    homePage.getFavoriteCount(targetArticle).then((initialNumber) => {
+      homePage.toggleFavorite(targetArticle);
+
+      cy.wait("@removeFavorite");
+      homePage.getFavoriteCount(targetArticle).then((newNumber) => {
+        expect(newNumber).to.be.lessThan(initialNumber);
+        expect(newNumber).to.equal(initialNumber - 1);
       });
     });
   });
