@@ -149,35 +149,12 @@ describe.only("Home Page - Functional Logic", () => {
       });
   });
 
-  it.only("Should display pagination when article count exceeds the limit (10 items)", () => {
-    const mockArticles = {
-      articles: [
-        {
-          slug: "test-article-1",
-          title: "Test Article 1",
-          description: "Desc",
-          body: "Body",
-          tagList: [],
-          createdAt: "2024-01-01T00:00:00.000Z",
-          updatedAt: "2024-01-01T00:00:00.000Z",
-          favorited: false,
-          favoritesCount: 0,
-          author: {
-            username: "Tester",
-            bio: null,
-            image: "https://i.stack.imgur.com/xHWG8.jpg",
-            following: false,
-          },
-        },
-      ],
-      articlesCount: 11,
-    };
-
+  it.only("Should display pagination when article count exceeds the limit (10 items)", function () {
     cy.intercept("GET", "**/articles?*", {
       statusCode: 200,
-      body: mockArticles,
+      fixture: "mock-articles.json",
     }).as("getMockArticles");
-
+    cy.reload();
     cy.wait("@getMockArticles");
     cy.get(".pagination").should("be.visible");
     cy.get(".pagination .page-item").should("have.length", 2);
