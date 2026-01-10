@@ -149,14 +149,35 @@ describe.only("Home Page - Functional Logic", () => {
       });
   });
 
-  it.only("Should display pagination when article count exceeds the limit (10 items)", function () {
+  it("Should display pagination when article count exceeds the limit (10 items)", function () {
     cy.intercept("GET", "**/articles?*", {
       statusCode: 200,
       fixture: "mock-articles.json",
     }).as("getMockArticles");
+
     cy.reload();
+
     cy.wait("@getMockArticles");
     cy.get(".pagination").should("be.visible");
     cy.get(".pagination .page-item").should("have.length", 2);
+  });
+
+  it.only("Should load the next set of articles when clicking pagination numbers", function () {
+    cy.intercept("GET", "**/articles?*", {
+      statusCode: 200,
+      fixture: "mock-articles.json",
+    }).as("getMockArticles");
+
+    cy.reload();
+
+    cy.wait("@getMockArticles");
+    cy.get(".pagination .page-item.active").should("contain.text", "1");
+    cy.get(".pagination .page-item button").contains("2").click();
+
+    cy.wait("@getMockArticles");
+    cy.get(".pagination .page-item button")
+      .contains("2")
+      .parents(".page-item")
+      .should("have.class", "active");
   });
 });
