@@ -4,7 +4,7 @@ const editorPage: EditorPage = new EditorPage();
 
 describe("Editor Page - Positive Cases", () => {
   beforeEach(() => {
-    cy.login("email@test.com", "password");
+    cy.login("fadidajunaedy@mail.com", "qq332211");
     editorPage.visit();
   });
 
@@ -22,5 +22,10 @@ describe("Editor Page - Positive Cases", () => {
     cy.wait("@addArticle");
     cy.url().should("contain", "/article/");
     cy.get("h1").should("contain", nowString);
+
+    cy.url().then((textUrl) => {
+      const slug = textUrl.split("/article/")[1];
+      cy.removeArticle(slug);
+    });
   });
 });
