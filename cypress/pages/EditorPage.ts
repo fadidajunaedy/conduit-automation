@@ -16,7 +16,7 @@ class EditorPage {
   }
 
   get bodyInput() {
-    return cy.get("input[formcontrolname='body']");
+    return cy.get("textarea[formcontrolname='body']");
   }
 
   get tagsInput() {
