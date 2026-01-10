@@ -33,7 +33,7 @@ describe("Home Page - Guest State", () => {
   });
 });
 
-describe("Home Page - Authenticated State", () => {
+describe.only("Home Page - Authenticated State", () => {
   let authToken: string;
 
   before(() => {
@@ -60,23 +60,28 @@ describe("Home Page - Authenticated State", () => {
     homePage.yourFeedLink.should("exist");
   });
 
-  // it.only("Should allow user to toggle 'Favorite' (With Network Wait)", () => {
-  //   cy.intercept("POST", "**/favorite").as("addFavorite");
+  it.only("Should allow user to toggle 'Favorite' (Add Favorite)", () => {
+    cy.intercept("POST", "**/favorite").as("addFavorite");
 
-  //   homePage.getFavoriteCount(targetArticle).then((text) => {
-  //     const initialCount = parseInt(text.trim());
-  //     cy.log("" + initialCount);
-  //     homePage.toggleFavorite(targetArticle);
+    homePage.getArticleSlug(targetArticle).then((slug) => {
+      cy.removeFavoriteArticle(slug);
+    });
 
-  //     cy.wait("@addFavorite");
-  //     homePage.getFavoriteCount(targetArticle).then((newText) => {
-  //       const newCount = parseInt(newText.trim());
-  //       cy.log("" + newCount);
-  //       expect(newCount).to.be.greaterThan(initialCount);
-  //       expect(newCount).to.equal(initialCount + 1);
-  //     });
-  //   });
-  // });
+    cy.reload();
+
+    homePage
+      .getFavoriteButton(targetArticle)
+      .should("not.have.class", "btn-primary");
+    homePage.getFavoriteCount(targetArticle).then((initialNumber) => {
+      homePage.toggleFavorite(targetArticle);
+
+      cy.wait("@addFavorite");
+      homePage.getFavoriteCount(targetArticle).then((newNumber) => {
+        expect(newNumber).to.be.greaterThan(initialNumber);
+        expect(newNumber).to.equal(initialNumber + 1);
+      });
+    });
+  });
 
   it("Should navigate to Article Detail page when clicking an article title", () => {
     homePage.openArticle(targetArticle);
@@ -90,7 +95,7 @@ describe("Home Page - Authenticated State", () => {
   });
 });
 
-describe.only("Home Page - Functional Logic", () => {
+describe("Home Page - Functional Logic", () => {
   let authToken: string;
 
   before(() => {
