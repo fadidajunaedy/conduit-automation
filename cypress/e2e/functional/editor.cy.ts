@@ -51,7 +51,7 @@ describe("Editor Page - Positive Cases", () => {
   });
 });
 
-describe.only("Editor Page - Negative Cases (Validation)", () => {
+describe("Editor Page - Negative Cases (Validation)", () => {
   beforeEach(() => {
     cy.login("fadidajunaedy@mail.com", "qq332211");
     editorPage.visit();
@@ -102,7 +102,7 @@ describe.only("Editor Page - Negative Cases (Validation)", () => {
       .should("contain.text", "body can't be blank");
   });
 
-  it.only("Verify article creation behavior with duplicate Title", () => {
+  it("Verify article creation behavior with duplicate Title", () => {
     cy.intercept("POST", "**/articles").as("addArticle");
 
     const dummyTitle = `dummy article ${new Date().toString()}`;
