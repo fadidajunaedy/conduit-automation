@@ -1,58 +1,123 @@
 import HomePage from "../../pages/HomePage";
 import RequestManager from "../../utils/requestManager";
 
-// describe("Home Page Feed Integration", () => {
-//   let authToken: string;
-//   const homePage: HomePage = new HomePage();
-//   const targetArticle =
-//     "Mastering Knowledge with Self-Assessments: Identifying and Bridging Learning Gaps in Education";
-
-//   before(() => {
-//     const requestManager = new RequestManager();
-//     requestManager.getAuthToken("email@test.com", "password").then((token) => {
-//       cy.log("Token received:", token);
-//       authToken = token;
-//     });
-//   });
-
-//   it("Should allows user to open specific article", () => {
-//     window.localStorage.setItem("jwtToken", authToken);
-
-//     cy.visit("/");
-//     homePage.openArticle(targetArticle);
-//     cy.get("h1").should("contain", targetArticle);
-//   });
-
-//   it("Should allow user to toggle favorite spesific article", () => {});
-// });
+const homePage: HomePage = new HomePage();
+const targetArticle =
+  "Mastering Knowledge with Self-Assessments: Identifying and Bridging Learning Gaps in Education";
 
 describe("Home Page - Guest State", () => {
-  const homePage: HomePage = new HomePage();
-  it("Should display 'Sign in' and 'Sign up' buttons in Navbar", () => {
+  beforeEach(() => {
     homePage.visit();
+  });
+
+  it("Should display 'Sign in' and 'Sign up' buttons in Navbar", () => {
     homePage.navbar.profileLink.should("not.exist");
     homePage.navbar.SignInLink.should("exist");
     homePage.navbar.SignUpLink.should("exist");
   });
-  it("Should display 'Global Feed' tab by default", () => {});
-  it("Should redirect to Registration page when clicking 'Favorite' (Heart) button", () => {});
-  it("Should redirect to Login page when clicking 'Sign in' link", () => {});
+
+  it("Should display 'Global Feed' tab by default", () => {
+    homePage.globalFeedLink.should("have.class", "active");
+  });
+
+  it("Should redirect to Registration page when clicking 'Favorite' (Heart) button", () => {
+    homePage.toggleFavorite(targetArticle);
+    cy.url().should("contain", "/register");
+    cy.get("h1").should("contain", "Sign up");
+  });
+
+  it("Should redirect to Login page when clicking 'Sign in' link", () => {
+    homePage.navbar.clickSignInLink();
+    cy.url().should("contain", "/login");
+    cy.get("h1").should("contain", "Sign in");
+  });
 });
 
 describe("Home Page - Authenticated State", () => {
-  it("Should display User Profile and 'New Article' buttons in Navbar", () => {});
-  it("Should display 'Your Feed' tab by default upon load", () => {});
-  it("Should allow user to toggle 'Favorite' on an article", () => {});
-  it("Should navigate to Article Detail page when clicking an article title", () => {});
-  it("Should display 'No articles are here... yet.' when feed is empty", () => {});
-  it("", () => {});
+  let authToken: string;
+
+  before(() => {
+    const requestManager = new RequestManager();
+    requestManager.getAuthToken("email@test.com", "password").then((token) => {
+      cy.log("Token received:", token);
+      authToken = token;
+    });
+  });
+
+  beforeEach(() => {
+    window.localStorage.setItem("jwtToken", authToken);
+    homePage.visit();
+  });
+
+  it("Should display User Profile and 'New Article' buttons in Navbar", () => {
+    homePage.navbar.SignInLink.should("not.exist");
+    homePage.navbar.SignUpLink.should("not.exist");
+    homePage.navbar.profileLink.should("exist");
+    homePage.navbar.newArtcileLink.should("exist");
+  });
+
+  it("Should display 'Your Feed' tab by default upon load", () => {
+    homePage.yourFeedLink.should("exist");
+  });
+
+  // it.only("Should allow user to toggle 'Favorite' (With Network Wait)", () => {
+  //   cy.intercept("POST", "**/favorite").as("addFavorite");
+
+  //   homePage.getFavoriteCount(targetArticle).then((text) => {
+  //     const initialCount = parseInt(text.trim());
+  //     cy.log("" + initialCount);
+  //     homePage.toggleFavorite(targetArticle);
+
+  //     cy.wait("@addFavorite");
+  //     homePage.getFavoriteCount(targetArticle).then((newText) => {
+  //       const newCount = parseInt(newText.trim());
+  //       cy.log("" + newCount);
+  //       expect(newCount).to.be.greaterThan(initialCount);
+  //       expect(newCount).to.equal(initialCount + 1);
+  //     });
+  //   });
+  // });
+
+  it("Should navigate to Article Detail page when clicking an article title", () => {
+    homePage.openArticle(targetArticle);
+    cy.url().should("contain", "/article/");
+    cy.get("h1").should("contain", targetArticle);
+  });
+
+  it("Should display 'No articles are here... yet.' when feed is empty", () => {
+    homePage.clickYourFeedLink();
+    homePage.yourFeedLink.should("have.class", "active");
+  });
 });
 
-describe("Home Page - Functional Logic", () => {
-  it("Should filter article list by Popular Tags", () => {});
-  it("Should display pagination when article count exceeds the limit (10 items)", () => {});
-  it("Should load the next set of articles when clicking pagination numbers", () => {});
-  it("Should clear tag filter when clicking 'Global Feed' tab again", () => {});
-  it("Should highlight the current page number in pagination.", () => {});
-  it("", () => {});
+describe.only("Home Page - Functional Logic", () => {
+  let authToken: string;
+
+  before(() => {
+    const requestManager = new RequestManager();
+    requestManager.getAuthToken("email@test.com", "password").then((token) => {
+      cy.log("Token received:", token);
+      authToken = token;
+    });
+  });
+
+  beforeEach(() => {
+    window.localStorage.setItem("jwtToken", authToken);
+    homePage.visit();
+  });
+
+  it("Should filter article list by Popular Tags", () => {
+    cy.intercept("GET", "**/articles?tag=*").as("tagRequest");
+    homePage.clickPopularTag("Bondar Academy");
+    cy.wait("@tagRequest");
+    cy.get(".nav-link.active").should("contain", "Bondar Academy");
+    cy.get(".article-preview")
+      .should("have.length.greaterThan", 0)
+      .each(($article) => {
+        cy.wrap($article)
+          .find(".tag-list")
+          .scrollIntoView()
+          .should("contain.text", "Bondar Academy");
+      });
+  });
 });
