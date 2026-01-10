@@ -1,0 +1,22 @@
+{
+  "articles": [
+    {
+      "slug": "test-article-1",
+      "title": "Test Article 1",
+      "description": "Desc",
+      "body": "Body",
+      "tagList": [],
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "favorited": false,
+      "favoritesCount": 0,
+      "author": {
+        "username": "Tester",
+        "bio": null,
+        "image": "https://i.stack.imgur.com/xHWG8.jpg",
+        "following": false
+      }
+    }
+  ],
+  "articlesCount": 11
+}
