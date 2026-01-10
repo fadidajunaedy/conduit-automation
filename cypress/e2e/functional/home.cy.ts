@@ -31,6 +31,20 @@ describe("Home Page - Guest State", () => {
     cy.url().should("contain", "/login");
     cy.get("h1").should("contain", "Sign in");
   });
+
+  it("Should clear tag filter when clicking 'Global Feed' tab again", () => {
+    cy.intercept("GET", "**/articles?tag=*").as("getArticlesByTag");
+    cy.intercept("GET", "**/articles?limit=*").as("getGlobalArticlesFeed");
+
+    homePage.clickPopularTag("Bondar Academy");
+    cy.wait("@getArticlesByTag");
+    cy.get("a.nav-link.active").contains("Bondar Academy").should("exist");
+    homePage.clickGlobalFeedLink();
+
+    cy.wait("@getGlobalArticlesFeed");
+    homePage.globalFeedLink.should("have.class", "active");
+    cy.get("a.nav-link").contains("Bondar Academy").should("not.exist");
+  });
 });
 
 describe("Home Page - Authenticated State", () => {
@@ -118,7 +132,7 @@ describe("Home Page - Authenticated State", () => {
   });
 });
 
-describe.only("Home Page - Functional Logic", () => {
+describe("Home Page - Functional Logic", () => {
   let authToken: string;
 
   before(() => {
@@ -162,7 +176,7 @@ describe.only("Home Page - Functional Logic", () => {
     cy.get(".pagination .page-item").should("have.length", 2);
   });
 
-  it.only("Should load the next set of articles when clicking pagination numbers", function () {
+  it("Should load the next set of articles when clicking pagination numbers", function () {
     cy.intercept("GET", "**/articles?*", {
       statusCode: 200,
       fixture: "mock-articles.json",
