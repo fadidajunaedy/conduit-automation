@@ -23,6 +23,10 @@ class HomePage {
     return cy.get(".sidebar .tag-list .tag-pill");
   }
 
+  get paginationButtonList() {
+    return cy.get(".pagination .page-item button");
+  }
+
   visit() {
     cy.visit("/");
   }
@@ -86,6 +90,14 @@ class HomePage {
 
   clickPopularTag(tagName: string) {
     this.popularTagList.filter(`:contains("${tagName}")`).click();
+  }
+
+  getPaginationButton(pageNumber: string | number) {
+    return this.paginationButtonList.contains(pageNumber);
+  }
+
+  clickPagination(pageNumber: string | number) {
+    this.getPaginationButton(pageNumber).click();
   }
 }
 
