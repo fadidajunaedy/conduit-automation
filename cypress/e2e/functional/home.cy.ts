@@ -171,12 +171,15 @@ describe.only("Home Page - Functional Logic", () => {
     cy.reload();
 
     cy.wait("@getMockArticles");
-    cy.get(".pagination .page-item.active").should("contain.text", "1");
-    cy.get(".pagination .page-item button").contains("2").click();
+    homePage
+      .getPaginationButton("1")
+      .parents(".page-item")
+      .should("have.class", "active");
+    homePage.clickPagination("2");
 
     cy.wait("@getMockArticles");
-    cy.get(".pagination .page-item button")
-      .contains("2")
+    homePage
+      .getPaginationButton("2")
       .parents(".page-item")
       .should("have.class", "active");
   });
