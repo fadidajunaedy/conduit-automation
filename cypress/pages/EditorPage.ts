@@ -49,7 +49,10 @@ class EditorPage {
   }
 
   removeTags(tagName: string) {
-    cy.get(".tag-list .tag-pill").find(`:contains('${tagName}')`).click();
+    cy.get(".tag-list .tag-pill")
+      .filter(`:contains('${tagName}')`)
+      .find("i")
+      .click();
   }
 
   submit() {
