@@ -27,18 +27,27 @@ class HomePage {
     cy.visit("/");
   }
 
-  getArticlePreviewItem(title: string) {
-    return this.articlePreviewList
-      .filter(`:contains("${title}")`)
-      .should("be.visible");
-  }
-
   clickYourFeedLink() {
     this.yourFeedLink.click();
   }
 
   clickGlobalFeedLink() {
     this.globalFeedLink.click();
+  }
+
+  getArticlePreviewItem(title: string) {
+    return this.articlePreviewList
+      .filter(`:contains("${title}")`)
+      .should("be.visible");
+  }
+
+  getArticleSlug(title: string) {
+    return this.getArticlePreviewItem(title)
+      .find("a")
+      .invoke("attr", "href")
+      .then((href) => {
+        return href.replace("/article/", "");
+      });
   }
 
   openArticle(title: string) {
@@ -69,7 +78,7 @@ class HomePage {
     return this.getArticlePreviewItem(title).find(".tag-list li");
   }
 
-  getArticlesByTag(tagName: string) {
+  clickPopularTag(tagName: string) {
     this.popularTagList.filter(`:contains("${tagName}")`).click();
   }
 }
