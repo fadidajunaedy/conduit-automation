@@ -29,7 +29,7 @@ describe("Editor Page - Positive Cases", () => {
     });
   });
 
-  it.only("Verify user can publish article without Tags (Optional field)", () => {
+  it("Verify user can publish article without Tags (Optional field)", () => {
     cy.intercept("POST", "**/articles").as("addArticle");
 
     const nowString = new Date().toString();
@@ -46,6 +46,96 @@ describe("Editor Page - Positive Cases", () => {
 
     cy.url().then((textUrl) => {
       const slug = textUrl.split("/article/")[1];
+      cy.removeArticle(slug);
+    });
+  });
+});
+
+describe.only("Editor Page - Negative Cases (Validation)", () => {
+  beforeEach(() => {
+    cy.login("fadidajunaedy@mail.com", "qq332211");
+    editorPage.visit();
+  });
+
+  it("Verify system rejects submission when Title is empty", () => {
+    cy.intercept("POST", "**/articles").as("addArticle");
+
+    const nowString = new Date().toString();
+    editorPage.fillDescription(`this is dummy article ${nowString}`);
+    editorPage.fillBody("Lorem ipsum dolor si amet");
+    editorPage.fillTags("test");
+    editorPage.submit();
+
+    cy.wait("@addArticle");
+    cy.get(".error-messages")
+      .find("li")
+      .should("contain.text", "title can't be blank");
+  });
+
+  it("Verify system rejects submission when Description is empty", () => {
+    cy.intercept("POST", "**/articles").as("addArticle");
+
+    const nowString = new Date().toString();
+    editorPage.fillTitle(`dummy article ${nowString}`);
+    editorPage.fillBody("Lorem ipsum dolor si amet");
+    editorPage.fillTags("test");
+    editorPage.submit();
+
+    cy.wait("@addArticle");
+    cy.get(".error-messages")
+      .find("li")
+      .should("contain.text", "description can't be blank");
+  });
+
+  it("Verify system rejects submission when Body is empty", () => {
+    cy.intercept("POST", "**/articles").as("addArticle");
+
+    const nowString = new Date().toString();
+    editorPage.fillTitle(`dummy article ${nowString}`);
+    editorPage.fillDescription(`this is dummy article ${nowString}`);
+    editorPage.fillTags("test");
+    editorPage.submit();
+
+    cy.wait("@addArticle");
+    cy.get(".error-messages")
+      .find("li")
+      .should("contain.text", "body can't be blank");
+  });
+
+  it.only("Verify article creation behavior with duplicate Title", () => {
+    cy.intercept("POST", "**/articles").as("addArticle");
+
+    const dummyTitle = `dummy article ${new Date().toString()}`;
+    editorPage.fillTitle(dummyTitle);
+    editorPage.fillDescription("this is dummy article");
+    editorPage.fillBody("Lorem ipsum dolor si amet");
+    editorPage.fillTags("test");
+    editorPage.fillTags("dummy");
+    editorPage.submit();
+
+    cy.wait("@addArticle");
+    cy.url().should("contain", "/article/");
+    cy.get("h1").should("contain", dummyTitle);
+
+    cy.url().then((url) => {
+      const slug = url.split("/article/")[1];
+      cy.wrap(slug).as("slugArticle");
+    });
+
+    editorPage.visit();
+
+    editorPage.fillTitle(dummyTitle);
+    editorPage.fillDescription("this is dummy article");
+    editorPage.fillBody("Lorem ipsum dolor si amet");
+    editorPage.fillTags("test");
+    editorPage.fillTags("dummy");
+    editorPage.submit();
+
+    cy.wait("@addArticle");
+    cy.get(".error-messages")
+      .find("li")
+      .should("contain.text", "title must be unique");
+    cy.get<string>("@slugArticle").then((slug) => {
       cy.removeArticle(slug);
     });
   });
