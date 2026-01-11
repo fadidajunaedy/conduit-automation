@@ -40,6 +40,10 @@ class Navbar {
       });
   }
 
+  get profileUsername() {
+    return this.profileLink.invoke("text");
+  }
+
   clickBrandLink() {
     this.brandLink.click();
   }
