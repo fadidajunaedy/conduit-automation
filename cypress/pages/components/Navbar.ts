@@ -31,6 +31,15 @@ class Navbar {
     return this.navbar.find("a[href*='/profile/']");
   }
 
+  get profileImageUrl(): Cypress.Chainable<string> {
+    return this.profileLink
+      .find("img")
+      .invoke("attr", "src")
+      .then((src) => {
+        return src;
+      });
+  }
+
   clickBrandLink() {
     this.brandLink.click();
   }
