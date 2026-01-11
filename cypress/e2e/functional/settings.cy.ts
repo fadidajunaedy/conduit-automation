@@ -10,6 +10,8 @@ describe.only("Settings Page - Functional Update", () => {
 
   it("Verify user can update Profile Picture", () => {
     cy.intercept("PUT", "**/user").as("updateUser");
+    cy.intercept("GET", "**/profiles/*").as("getProfileUser");
+
     const newProfileImageUrl = "https://placehold.co/400x400/000000/FFFFFF/png";
     settingsPage.navbar.profileImageUrl.then((initialUrl) => {
       cy.log("initial URL: " + initialUrl);
@@ -27,12 +29,13 @@ describe.only("Settings Page - Functional Update", () => {
           expect(src).to.be.not.equal(initialUrl);
           expect(src).to.be.equal(newProfileImageUrl);
 
+          cy.wait("@getProfileUser");
           cy.updateUser({ image: initialUrl });
         });
     });
   });
 
-  it.only("Verify user can update Username", () => {
+  it("Verify user can update Username", () => {
     cy.intercept("PUT", "**/user").as("updateUser");
     cy.intercept("GET", "**/profiles/*").as("getProfileUser");
 
