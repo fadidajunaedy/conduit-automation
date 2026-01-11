@@ -31,4 +31,35 @@ describe.only("Settings Page - Functional Update", () => {
         });
     });
   });
+
+  it.only("Verify user can update Username", () => {
+    cy.intercept("PUT", "**/user").as("updateUser");
+    cy.intercept("GET", "**/profiles/*").as("getProfileUser");
+
+    const newUsername = "newfadidajunaedy";
+    settingsPage.navbar.profileUsername.then((text) => {
+      const initialUsername = text.trim();
+      cy.log("Initial Username: " + initialUsername);
+      cy.log("New Username: " + newUsername);
+
+      settingsPage.fillUsername(newUsername);
+      settingsPage.submit();
+
+      cy.wait("@updateUser");
+
+      cy.url().should("contain", "/profile/");
+      cy.get(".profile-page")
+        .find("h4")
+        .invoke("text")
+        .then((newText) => {
+          const appearingNewUsername = newText.trim();
+
+          expect(appearingNewUsername).to.be.not.equal(initialUsername);
+          expect(appearingNewUsername).to.be.equal(newUsername);
+
+          cy.wait("@getProfileUser");
+          cy.updateUser({ username: initialUsername });
+        });
+    });
+  });
 });
