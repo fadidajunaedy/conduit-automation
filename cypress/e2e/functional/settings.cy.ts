@@ -2,7 +2,7 @@ import SettingsPage from "../../pages/SettingsPage";
 
 const settingsPage: SettingsPage = new SettingsPage();
 
-describe.only("Settings Page - Functional Update", () => {
+describe("Settings Page - Functional Update", () => {
   beforeEach(() => {
     cy.login("fadidajunaedy@mail.com", "qq332211");
     settingsPage.visit();
@@ -66,7 +66,7 @@ describe.only("Settings Page - Functional Update", () => {
     });
   });
 
-  it.only("Verify user can update Bio", () => {
+  it("Verify user can update Bio", () => {
     cy.intercept("PUT", "**/user").as("updateUser");
     cy.intercept("GET", "**/profiles/*").as("getProfileUser");
 
@@ -92,5 +92,22 @@ describe.only("Settings Page - Functional Update", () => {
         cy.wait("@getProfileUser");
         cy.updateUser({ bio: initialBio });
       });
+  });
+
+  describe.only("Settings Page - Session Management", () => {
+    beforeEach(() => {
+      cy.login("fadidajunaedy@mail.com", "qq332211");
+      settingsPage.visit();
+    });
+
+    it("Verify user is redirected to Home page after Logout", () => {
+      settingsPage.logout();
+      cy.url().should("equal", "https://conduit.bondaracademy.com/");
+
+      cy.window().then((window) => {
+        const authToken = window.localStorage.getItem("jwtToken");
+        expect(authToken).to.be.not.exist;
+      });
+    });
   });
 });
