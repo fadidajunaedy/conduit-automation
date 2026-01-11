@@ -1,9 +1,18 @@
 declare namespace Cypress {
+  interface UserSettings {
+    image?: string;
+    username?: string;
+    bio?: string;
+    email?: string;
+    password?: string;
+  }
+
   interface Chainable {
     login(email: string, password: string): Chainable<void>;
     addFavoriteArticle(slug: string): Chainable<void>;
     removeFavoriteArticle(slug: string): Chainable<void>;
     removeArticle(slug: string): Chainable<void>;
+    updateUser(userSettingsObj: UserSettings): Chainable<void>;
   }
 }
 
@@ -55,6 +64,21 @@ Cypress.Commands.add("removeArticle", (slug) => {
       method: "DELETE",
       url: `${Cypress.env("apiUrl")}/articles/${slug}`,
       headers: { Authorization: `Token ${authToken}` },
+      failOnStatusCode: false,
+    });
+  });
+});
+
+Cypress.Commands.add("updateUser", (userSettingsObj) => {
+  cy.window().then((window) => {
+    const authToken = window.localStorage.getItem("jwtToken");
+    cy.request({
+      method: "PUT",
+      url: `${Cypress.env("apiUrl")}/user`,
+      headers: { Authorization: `Token ${authToken}` },
+      body: {
+        user: userSettingsObj,
+      },
       failOnStatusCode: false,
     });
   });
