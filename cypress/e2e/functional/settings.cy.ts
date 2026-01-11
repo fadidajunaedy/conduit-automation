@@ -93,21 +93,21 @@ describe("Settings Page - Functional Update", () => {
         cy.updateUser({ bio: initialBio });
       });
   });
+});
 
-  describe.only("Settings Page - Session Management", () => {
-    beforeEach(() => {
-      cy.login("fadidajunaedy@mail.com", "qq332211");
-      settingsPage.visit();
-    });
+describe("Settings Page - Session Management", () => {
+  beforeEach(() => {
+    cy.login("fadidajunaedy@mail.com", "qq332211");
+    settingsPage.visit();
+  });
 
-    it("Verify user is redirected to Home page after Logout", () => {
-      settingsPage.logout();
-      cy.url().should("equal", "https://conduit.bondaracademy.com/");
+  it("Verify user is redirected to Home page after Logout", () => {
+    settingsPage.logout();
+    cy.url().should("equal", "https://conduit.bondaracademy.com/");
 
-      cy.window().then((window) => {
-        const authToken = window.localStorage.getItem("jwtToken");
-        expect(authToken).to.be.not.exist;
-      });
+    cy.window().then((window) => {
+      const authToken = window.localStorage.getItem("jwtToken");
+      expect(authToken).to.be.not.exist;
     });
   });
 });
