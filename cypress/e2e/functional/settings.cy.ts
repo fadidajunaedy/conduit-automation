@@ -65,4 +65,32 @@ describe.only("Settings Page - Functional Update", () => {
         });
     });
   });
+
+  it.only("Verify user can update Bio", () => {
+    cy.intercept("PUT", "**/user").as("updateUser");
+    cy.intercept("GET", "**/profiles/*").as("getProfileUser");
+
+    const initialBio = "Lorem ipsum dolor si amet";
+    const newBio = `Bio ${new Date().toString()}`;
+
+    cy.updateUser({ bio: initialBio });
+
+    settingsPage.fillBio(newBio);
+    settingsPage.submit();
+
+    cy.wait("@updateUser");
+
+    cy.url().should("contain", "/profile");
+    cy.get(".profile-page")
+      .find("p")
+      .invoke("text")
+      .then((newText) => {
+        const appearingNewbio = newText.trim();
+        expect(appearingNewbio).to.be.not.equal(initialBio);
+        expect(appearingNewbio).to.be.equal(newBio);
+
+        cy.wait("@getProfileUser");
+        cy.updateUser({ bio: initialBio });
+      });
+  });
 });
