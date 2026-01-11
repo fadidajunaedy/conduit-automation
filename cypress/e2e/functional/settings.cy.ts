@@ -50,7 +50,7 @@ describe.only("Settings Page - Functional Update", () => {
 
       cy.wait("@updateUser");
 
-      cy.url().should("contain", "/profile/");
+      cy.url().should("contain", `/profile/${newUsername}`);
       cy.get(".profile-page")
         .find("h4")
         .invoke("text")
