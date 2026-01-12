@@ -44,7 +44,7 @@ class ArticlePage {
   }
 
   get favoriteArticleCounter() {
-    return this.favoriteArticleCounter
+    return this.favortiteArticleButton
       .find(".counter")
       .invoke("text")
       .then((text: string) => {
