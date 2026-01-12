@@ -25,7 +25,7 @@ describe("Reader Perspective (Interaction)", () => {
     });
   });
 
-  it.only("Verify user can Follow/Unfollow author", () => {
+  it("Verify user can Follow/Unfollow author", () => {
     cy.intercept("POST", "**/profiles/**/follow").as("followProfile");
 
     articlePage.authorName.then((authorName) => {
@@ -49,6 +49,29 @@ describe("Reader Perspective (Interaction)", () => {
               expect(currentTextButton).to.contain("Unfollow");
             });
         });
+    });
+  });
+
+  it.only("Verify user can Favorite/Unfavorite article", () => {
+    cy.intercept("POST", "**/articles/**/favorite").as("addArticleFavorite");
+    cy.removeFavoriteArticle(targetArticleSlug);
+
+    articlePage.favoriteArticleCounter.then((initialNumber: number) => {
+      articlePage.favortiteArticleButton.should(
+        "not.have.class",
+        "btn-primary"
+      );
+      articlePage.toggleFavoriteArticle();
+      cy.wait("@addArticleFavorite");
+      cy.reload();
+
+      articlePage.favoriteArticleCounter.then((newNumber) => {
+        cy.log("Initial Number: " + initialNumber);
+        cy.log("New Number: " + newNumber);
+
+        expect(newNumber).to.be.greaterThan(initialNumber);
+        articlePage.favortiteArticleButton.should("have.class", "btn-primary");
+      });
     });
   });
 });
