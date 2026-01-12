@@ -13,6 +13,8 @@ declare namespace Cypress {
     removeFavoriteArticle(slug: string): Chainable<void>;
     removeArticle(slug: string): Chainable<void>;
     updateUser(userSettingsObj: UserSettings): Chainable<void>;
+    followProfile(username: string): Chainable<void>;
+    unfollowProfile(username: string): Chainable<void>;
   }
 }
 
@@ -79,6 +81,30 @@ Cypress.Commands.add("updateUser", (userSettingsObj) => {
       body: {
         user: userSettingsObj,
       },
+      failOnStatusCode: false,
+    });
+  });
+});
+
+Cypress.Commands.add("followProfile", (username) => {
+  cy.window().then((window) => {
+    const authToken = window.localStorage.getItem("jwtToken");
+    cy.request({
+      method: "POST",
+      url: `${Cypress.env("apiUrl")}/profiles/${username}/follow`,
+      headers: { Authorization: `Token ${authToken}` },
+      failOnStatusCode: false,
+    });
+  });
+});
+
+Cypress.Commands.add("unfollowProfile", (username) => {
+  cy.window().then((window) => {
+    const authToken = window.localStorage.getItem("jwtToken");
+    cy.request({
+      method: "DELETE",
+      url: `${Cypress.env("apiUrl")}/profiles/${username}/follow`,
+      headers: { Authorization: `Token ${authToken}` },
       failOnStatusCode: false,
     });
   });
