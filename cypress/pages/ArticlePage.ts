@@ -28,23 +28,23 @@ class ArticlePage {
   }
 
   get followAuthorButton() {
-    return cy.get("app-follow-button button").first();
+    return cy.get("app-follow-button:first button");
   }
 
-  get favortiteArticleButton() {
-    return cy.get("app-favorite-button button").first();
+  get favoriteArticleButton() {
+    return cy.get("app-favorite-button:first button");
   }
 
-  get editArticeButton() {
-    return cy.get("button").contains("Edit Article").first();
+  get editArticleButton() {
+    return cy.get("a[href*='/editor/']:first");
   }
 
-  get deleteArticeButton() {
-    return cy.get("button").contains("Delete Article").first();
+  get deleteArticleButton() {
+    return cy.get("button.btn-outline-danger:first");
   }
 
   get favoriteArticleCounter() {
-    return this.favortiteArticleButton
+    return this.favoriteArticleButton
       .find(".counter")
       .invoke("text")
       .then((text: string) => {
@@ -77,15 +77,15 @@ class ArticlePage {
   }
 
   toggleFavoriteArticle() {
-    this.favortiteArticleButton.click();
+    this.favoriteArticleButton.click();
   }
 
   clickEditArticle() {
-    this.editArticeButton.click();
+    this.editArticleButton.click();
   }
 
   clickDeleteArticle() {
-    this.deleteArticeButton.click();
+    this.deleteArticleButton.click();
   }
 
   fillComment(comment: string) {
