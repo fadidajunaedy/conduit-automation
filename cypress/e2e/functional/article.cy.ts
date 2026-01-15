@@ -52,15 +52,12 @@ describe("Reader Perspective (Interaction)", () => {
     });
   });
 
-  it.only("Verify user can Favorite/Unfavorite article", () => {
+  it("Verify user can Favorite/Unfavorite article", () => {
     cy.intercept("POST", "**/articles/**/favorite").as("addArticleFavorite");
     cy.removeFavoriteArticle(targetArticleSlug);
 
     articlePage.favoriteArticleCounter.then((initialNumber: number) => {
-      articlePage.favortiteArticleButton.should(
-        "not.have.class",
-        "btn-primary"
-      );
+      articlePage.favoriteArticleButton.should("not.have.class", "btn-primary");
       articlePage.toggleFavoriteArticle();
       cy.wait("@addArticleFavorite");
       cy.reload();
@@ -70,8 +67,94 @@ describe("Reader Perspective (Interaction)", () => {
         cy.log("New Number: " + newNumber);
 
         expect(newNumber).to.be.greaterThan(initialNumber);
-        articlePage.favortiteArticleButton.should("have.class", "btn-primary");
+        articlePage.favoriteArticleButton.should("have.class", "btn-primary");
       });
     });
+  });
+
+  it("Verify user can post a comment", () => {
+    cy.intercept("POST", "**/articles/**/comments").as("postingComment");
+
+    const bodyComment = `Lorem ipsum ${new Date().toString()}`;
+    articlePage.fillComment(bodyComment);
+    articlePage.submitComment();
+
+    cy.wait("@postingComment").then((interception) => {
+      const commentId = interception.response.body.comment.id;
+
+      cy.reload();
+      articlePage.commentList
+        .find(".card-text")
+        .filter(`:contains('${bodyComment}')`)
+        .should("exist");
+
+      cy.removeCommentArticle(targetArticleSlug, commentId);
+    });
+  });
+
+  it("Verify user can delete their own comment", () => {
+    cy.intercept("DELETE", "**/articles/**/comments/**").as("deleteComment");
+
+    cy.addCommentArticle(
+      targetArticleSlug,
+      `Lorem ipsum ${new Date().toString()}`
+    ).then((responseBody) => {
+      cy.get(".card-text")
+        .filter(`:contains('${responseBody.comment.body}')`)
+        .should("exist");
+
+      articlePage.deleteComment(responseBody.comment.body);
+      cy.wait("@deleteComment");
+
+      cy.get(".card-text")
+        .filter(`:contains('${responseBody.comment.body}')`)
+        .should("not.exist");
+    });
+  });
+});
+
+describe("Author Perspective (Ownership)", () => {
+  beforeEach(() => {
+    cy.login("fadidajunaedy@mail.com", "qq332211");
+  });
+
+  it("Verify 'Edit' and 'Delete' article buttons are VISIBLE for the author", () => {
+    cy.intercept("GET", "**/articles/*").as("getArticle");
+
+    const uniqueSlug = Date.now().toString();
+    const articleData = {
+      title: `Test Article ${uniqueSlug}`,
+      description: "dummy description",
+      body: "dummy body",
+      tagList: ["Dummy Tag 1", "Dummy Tag 2"],
+    };
+
+    cy.addArticle(articleData).then((responseBody) => {
+      const slug = responseBody.article.slug;
+
+      articlePage.visit(slug);
+
+      cy.wait("@getArticle");
+      articlePage.followAuthorButton.should("not.exist");
+      articlePage.favoriteArticleButton.should("not.exist");
+
+      articlePage.editArticleButton.should("be.visible");
+      articlePage.deleteArticleButton.should("be.visible");
+
+      cy.removeArticle(slug);
+    });
+  });
+
+  it("Verify 'Edit' and 'Delete' article buttons are HIDDEN for non-authors", () => {
+    cy.intercept("GET", "**/articles/*").as("getArticle");
+
+    articlePage.visit(targetArticleSlug);
+
+    cy.wait("@getArticle");
+    articlePage.followAuthorButton.should("be.visible");
+    articlePage.favoriteArticleButton.should("be.visible");
+
+    articlePage.editArticleButton.should("not.exist");
+    articlePage.deleteArticleButton.should("not.exist");
   });
 });
