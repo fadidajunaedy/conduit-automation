@@ -82,6 +82,7 @@ Cypress.Commands.add("login", (email, password) => {
       },
     }).then((response) => {
       window.localStorage.setItem("jwtToken", response.body.user.token);
+      return response.body.user.token;
     });
   });
 });
