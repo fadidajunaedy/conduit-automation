@@ -18,7 +18,7 @@ class ArticlePage {
   }
 
   get author() {
-    return cy.get(".author").first();
+    return cy.get(".info .author").first();
   }
 
   get authorName() {
@@ -28,19 +28,19 @@ class ArticlePage {
   }
 
   get followAuthorButton() {
-    return cy.get("app-follow-button:first button");
+    return cy.get(".banner app-follow-button button");
   }
 
   get favoriteArticleButton() {
-    return cy.get("app-favorite-button:first button");
+    return cy.get(".banner app-favorite-button button");
   }
 
   get editArticleButton() {
-    return cy.get("a[href*='/editor/']:first");
+    return cy.get(".banner a[href*='/editor/']");
   }
 
   get deleteArticleButton() {
-    return cy.get("button.btn-outline-danger:first");
+    return cy.get(".banner button.btn-outline-danger");
   }
 
   get favoriteArticleCounter() {
