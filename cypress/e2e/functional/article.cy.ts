@@ -1,20 +1,24 @@
 import ArticlePage from "../../pages/ArticlePage";
-import SettingsPage from "../../pages/SettingsPage";
 
 const articlePage: ArticlePage = new ArticlePage();
 const targetArticleSlug =
   "Mastering-Knowledge-with-Self-Assessments:-Identifying-and-Bridging-Learning-Gaps-in-Education-1";
 
-describe("Reader Perspective (Interaction)", () => {
-  beforeEach(() => {
+describe("Reader Perspective (Interaction)", function () {
+  beforeEach(function () {
     cy.login("fadidajunaedy@mail.com", "qq332211");
     articlePage.visit(targetArticleSlug);
   });
 
-  it("Verify navigation to author profile when clicking Author Name", () => {
+  beforeEach(function () {
+    cy.login("fadidajunaedy@mail.com", "qq332211");
+    articlePage.visit(targetArticleSlug);
+  });
+
+  it("Verify navigation to author profile when clicking Author Name", function () {
     cy.intercept("GET", "**/profiles/*").as("getProfile");
 
-    articlePage.authorName.then((authorName) => {
+    articlePage.authorName.then(function (authorName) {
       articlePage.clickAuthor();
 
       cy.wait("@getProfile");
@@ -25,16 +29,16 @@ describe("Reader Perspective (Interaction)", () => {
     });
   });
 
-  it("Verify user can Follow/Unfollow author", () => {
+  it("Verify user can Follow/Unfollow author", function () {
     cy.intercept("POST", "**/profiles/**/follow").as("followProfile");
 
-    articlePage.authorName.then((authorName) => {
+    articlePage.authorName.then(function (authorName) {
       cy.unfollowProfile(authorName);
       cy.reload();
 
       articlePage.followAuthorButton
         .invoke("text")
-        .then((initialTextButton) => {
+        .then(function (initialTextButton) {
           const cleanText = initialTextButton.trim();
 
           expect(cleanText).to.contain("Follow");
@@ -45,24 +49,24 @@ describe("Reader Perspective (Interaction)", () => {
 
           articlePage.followAuthorButton
             .invoke("text")
-            .then((currentTextButton) => {
+            .then(function (currentTextButton) {
               expect(currentTextButton).to.contain("Unfollow");
             });
         });
     });
   });
 
-  it("Verify user can Favorite/Unfavorite article", () => {
+  it("Verify user can Favorite/Unfavorite article", function () {
     cy.intercept("POST", "**/articles/**/favorite").as("addArticleFavorite");
     cy.removeFavoriteArticle(targetArticleSlug);
 
-    articlePage.favoriteArticleCounter.then((initialNumber: number) => {
+    articlePage.favoriteArticleCounter.then(function (initialNumber: number) {
       articlePage.favoriteArticleButton.should("not.have.class", "btn-primary");
       articlePage.toggleFavoriteArticle();
       cy.wait("@addArticleFavorite");
       cy.reload();
 
-      articlePage.favoriteArticleCounter.then((newNumber) => {
+      articlePage.favoriteArticleCounter.then(function (newNumber) {
         cy.log("Initial Number: " + initialNumber);
         cy.log("New Number: " + newNumber);
 
@@ -72,14 +76,14 @@ describe("Reader Perspective (Interaction)", () => {
     });
   });
 
-  it("Verify user can post a comment", () => {
+  it("Verify user can post a comment", function () {
     cy.intercept("POST", "**/articles/**/comments").as("postingComment");
 
     const bodyComment = `Lorem ipsum ${new Date().toString()}`;
     articlePage.fillComment(bodyComment);
     articlePage.submitComment();
 
-    cy.wait("@postingComment").then((interception) => {
+    cy.wait("@postingComment").then(function (interception) {
       const commentId = interception.response.body.comment.id;
 
       cy.reload();
@@ -92,13 +96,13 @@ describe("Reader Perspective (Interaction)", () => {
     });
   });
 
-  it("Verify user can delete their own comment", () => {
+  it("Verify user can delete their own comment", function () {
     cy.intercept("DELETE", "**/articles/**/comments/**").as("deleteComment");
 
     cy.addCommentArticle(
       targetArticleSlug,
       `Lorem ipsum ${new Date().toString()}`
-    ).then((responseBody) => {
+    ).then(function (responseBody) {
       cy.get(".card-text")
         .filter(`:contains('${responseBody.comment.body}')`)
         .should("exist");
@@ -113,12 +117,12 @@ describe("Reader Perspective (Interaction)", () => {
   });
 });
 
-describe("Author Perspective (Ownership)", () => {
-  beforeEach(() => {
+describe("Author Perspective (Ownership)", function () {
+  beforeEach(function () {
     cy.login("fadidajunaedy@mail.com", "qq332211");
   });
 
-  it("Verify 'Edit' and 'Delete' article buttons are VISIBLE for the author", () => {
+  it("Verify 'Edit' and 'Delete' article buttons are VISIBLE for the author", function () {
     cy.intercept("GET", "**/articles/*").as("getArticle");
 
     const uniqueSlug = Date.now().toString();
@@ -129,7 +133,7 @@ describe("Author Perspective (Ownership)", () => {
       tagList: ["Dummy Tag 1", "Dummy Tag 2"],
     };
 
-    cy.addArticle(articleData).then((responseBody) => {
+    cy.addArticle(articleData).then(function (responseBody) {
       const slug = responseBody.article.slug;
 
       articlePage.visit(slug);
@@ -145,7 +149,7 @@ describe("Author Perspective (Ownership)", () => {
     });
   });
 
-  it("Verify 'Edit' and 'Delete' article buttons are HIDDEN for non-authors", () => {
+  it("Verify 'Edit' and 'Delete' article buttons are HIDDEN for non-authors", function () {
     cy.intercept("GET", "**/articles/*").as("getArticle");
 
     articlePage.visit(targetArticleSlug);
