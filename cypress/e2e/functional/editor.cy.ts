@@ -107,35 +107,20 @@ describe("Editor Page - Negative Cases (Validation)", function () {
     cy.intercept("POST", "**/articles").as("addArticle");
 
     const articleData = generateArticle();
-    editorPage.fillTitle(articleData.title);
-    editorPage.fillDescription(articleData.description);
-    editorPage.fillBody(articleData.body);
-    editorPage.fillTags(articleData.tagList[0]);
-    editorPage.fillTags(articleData.tagList[1]);
-    editorPage.submit();
 
-    cy.wait("@addArticle").then(function (interception) {
-      const slug = interception.response.body.article.slug;
-      cy.url().should("contain", slug);
-      cy.get("h1").should("contain", articleData.title);
-      cy.wrap(slug).as("slugArticle");
-    });
+    cy.addArticle(articleData).then(function (responseBody) {
+      editorPage.fillTitle(articleData.title);
+      editorPage.fillDescription(articleData.description);
+      editorPage.fillBody(articleData.body);
+      editorPage.fillTags(articleData.tagList[0]);
+      editorPage.fillTags(articleData.tagList[1]);
+      editorPage.submit();
 
-    editorPage.visit();
-
-    editorPage.fillTitle(articleData.title);
-    editorPage.fillDescription(articleData.description);
-    editorPage.fillBody(articleData.body);
-    editorPage.fillTags(articleData.tagList[0]);
-    editorPage.fillTags(articleData.tagList[1]);
-    editorPage.submit();
-
-    cy.wait("@addArticle");
-    cy.get(".error-messages")
-      .find("li")
-      .should("contain.text", "title must be unique");
-    cy.get<string>("@slugArticle").then(function (slug) {
-      cy.removeArticle(slug);
+      cy.wait("@addArticle");
+      cy.get(".error-messages")
+        .find("li")
+        .should("contain.text", "title must be unique");
+      cy.removeArticle(responseBody.article.slug);
     });
   });
 });
