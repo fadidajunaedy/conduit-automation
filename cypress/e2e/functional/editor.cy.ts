@@ -2,13 +2,13 @@ import EditorPage from "../../pages/EditorPage";
 
 const editorPage: EditorPage = new EditorPage();
 
-describe("Editor Page - Positive Cases", () => {
-  beforeEach(() => {
+describe("Editor Page - Positive Cases", function () {
+  beforeEach(function () {
     cy.login("fadidajunaedy@mail.com", "qq332211");
     editorPage.visit();
   });
 
-  it("Verify user can publish article with complete valid data", () => {
+  it("Verify user can publish article with complete valid data", function () {
     cy.intercept("POST", "**/articles").as("addArticle");
 
     const nowString = new Date().toString();
@@ -23,13 +23,13 @@ describe("Editor Page - Positive Cases", () => {
     cy.url().should("contain", "/article/");
     cy.get("h1").should("contain", nowString);
 
-    cy.url().then((textUrl) => {
+    cy.url().then(function (textUrl) {
       const slug = textUrl.split("/article/")[1];
       cy.removeArticle(slug);
     });
   });
 
-  it("Verify user can publish article without Tags (Optional field)", () => {
+  it("Verify user can publish article without Tags (Optional field)", function () {
     cy.intercept("POST", "**/articles").as("addArticle");
 
     const nowString = new Date().toString();
@@ -44,20 +44,20 @@ describe("Editor Page - Positive Cases", () => {
     cy.url().should("contain", "/article/");
     cy.get("h1").should("contain", nowString);
 
-    cy.url().then((textUrl) => {
+    cy.url().then(function (textUrl) {
       const slug = textUrl.split("/article/")[1];
       cy.removeArticle(slug);
     });
   });
 });
 
-describe("Editor Page - Negative Cases (Validation)", () => {
-  beforeEach(() => {
+describe("Editor Page - Negative Cases (Validation)", function () {
+  beforeEach(function () {
     cy.login("fadidajunaedy@mail.com", "qq332211");
     editorPage.visit();
   });
 
-  it("Verify system rejects submission when Title is empty", () => {
+  it("Verify system rejects submission when Title is empty", function () {
     cy.intercept("POST", "**/articles").as("addArticle");
 
     const nowString = new Date().toString();
@@ -72,7 +72,7 @@ describe("Editor Page - Negative Cases (Validation)", () => {
       .should("contain.text", "title can't be blank");
   });
 
-  it("Verify system rejects submission when Description is empty", () => {
+  it("Verify system rejects submission when Description is empty", function () {
     cy.intercept("POST", "**/articles").as("addArticle");
 
     const nowString = new Date().toString();
@@ -87,7 +87,7 @@ describe("Editor Page - Negative Cases (Validation)", () => {
       .should("contain.text", "description can't be blank");
   });
 
-  it("Verify system rejects submission when Body is empty", () => {
+  it("Verify system rejects submission when Body is empty", function () {
     cy.intercept("POST", "**/articles").as("addArticle");
 
     const nowString = new Date().toString();
@@ -102,7 +102,7 @@ describe("Editor Page - Negative Cases (Validation)", () => {
       .should("contain.text", "body can't be blank");
   });
 
-  it("Verify article creation behavior with duplicate Title", () => {
+  it("Verify article creation behavior with duplicate Title", function () {
     cy.intercept("POST", "**/articles").as("addArticle");
 
     const dummyTitle = `dummy article ${new Date().toString()}`;
@@ -117,7 +117,7 @@ describe("Editor Page - Negative Cases (Validation)", () => {
     cy.url().should("contain", "/article/");
     cy.get("h1").should("contain", dummyTitle);
 
-    cy.url().then((url) => {
+    cy.url().then(function (url) {
       const slug = url.split("/article/")[1];
       cy.wrap(slug).as("slugArticle");
     });
@@ -135,7 +135,7 @@ describe("Editor Page - Negative Cases (Validation)", () => {
     cy.get(".error-messages")
       .find("li")
       .should("contain.text", "title must be unique");
-    cy.get<string>("@slugArticle").then((slug) => {
+    cy.get<string>("@slugArticle").then(function (slug) {
       cy.removeArticle(slug);
     });
   });
