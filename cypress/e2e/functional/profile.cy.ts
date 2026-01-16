@@ -11,18 +11,18 @@ describe("Profile Page - My Profile View", function () {
 
   beforeEach(function () {
     cy.login(this.userData.email, this.userData.password);
-    cy.getCurrentUser().then((responseBody) => {
+    cy.getCurrentUser().then(function (responseBody) {
       profilePage.visit(responseBody.user.username);
     });
   });
 
   it("Should display correct user information (Username, Bio, Image)", function () {
-    cy.getCurrentUser().then((responseBody) => {
+    cy.getCurrentUser().then(function (responseBody) {
       profilePage.username.should("contain.text", responseBody.user.username);
       profilePage.bio.should("contain.text", responseBody.user.bio);
-      profilePage
-        .getImageUrl()
-        .then((url) => expect(url).to.be.equal(responseBody.user.image));
+      profilePage.getImageUrl().then(function (url) {
+        expect(url).to.be.equal(responseBody.user.image);
+      });
     });
   });
 
@@ -43,7 +43,7 @@ describe("Profile Page - My Profile View", function () {
 
   it('Should default to "My Articles" tab and display created articles', function () {
     const articleData = generateArticle();
-    cy.addArticle(articleData).then((responseBody) => {
+    cy.addArticle(articleData).then(function (responseBody) {
       const slug = responseBody.article.slug;
       const title = responseBody.article.title;
 
@@ -98,7 +98,7 @@ describe("Profile Page - Other Author View", function () {
     cy.wait("@followAuthor");
     cy.reload();
 
-    profilePage.followAuthorButton.invoke("text").then((text) => {
+    profilePage.followAuthorButton.invoke("text").then(function (text) {
       const cleanText = text.trim();
 
       expect(cleanText).to.contain("Unfollow");
@@ -116,7 +116,7 @@ describe("Profile Page - Other Author View", function () {
     cy.wait("@unfollowAuthor");
     cy.reload();
 
-    profilePage.followAuthorButton.invoke("text").then((text) => {
+    profilePage.followAuthorButton.invoke("text").then(function (text) {
       const cleanText = text.trim();
 
       expect(cleanText).to.contain("Follow");
