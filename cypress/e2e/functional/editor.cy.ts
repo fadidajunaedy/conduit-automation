@@ -1,11 +1,15 @@
-import { generateArticle } from "../../factories/article-factory";
 import EditorPage from "../../pages/EditorPage";
+import { generateArticle } from "../../factories/article-factory";
 
 const editorPage: EditorPage = new EditorPage();
 
 describe("Editor Page - Positive Cases", function () {
   beforeEach(function () {
-    cy.login("fadidajunaedy@mail.com", "qq332211");
+    cy.fixture("user.json").as("userData");
+  });
+
+  beforeEach(function () {
+    cy.login(this.userData.email, this.userData.password);
     editorPage.visit();
   });
 
