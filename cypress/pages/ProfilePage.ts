@@ -23,7 +23,7 @@ class ProfilePage {
     return cy.get(".user-info a[href='/settings']");
   }
 
-  get followProfileButton() {
+  get followAuthorButton() {
     return cy.get("app-follow-button button");
   }
 
@@ -49,6 +49,10 @@ class ProfilePage {
 
   goToProfileSettings() {
     this.editProfileSettingsButton.click();
+  }
+
+  followAuthor() {
+    this.followAuthorButton.click();
   }
 
   openTabMyPosts() {
