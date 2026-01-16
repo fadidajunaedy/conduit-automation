@@ -49,6 +49,17 @@ declare namespace Cypress {
     };
   }
 
+  interface CurrentUser {
+    user: {
+      id: number;
+      email: string;
+      username: string;
+      bio: string;
+      image: string;
+      token: string;
+    };
+  }
+
   interface Chainable {
     login(email: string, password: string): Chainable<void>;
     addFavoriteArticle(slug: string): Chainable<void>;
@@ -66,6 +77,7 @@ declare namespace Cypress {
     removeCommentArticle(slug: string, commentId: number): Chainable<void>;
     addArticle(body: ArticleRequestBody): Chainable<ArticleResponseBody>;
     removeArticle(slug: string): Chainable<void>;
+    getCurrentUser(): Chainable<CurrentUser>;
   }
 }
 
@@ -242,6 +254,20 @@ Cypress.Commands.add("removeArticle", (slug) => {
       url: `${Cypress.env("apiUrl")}/articles/${slug}`,
       headers: { Authorization: `Token ${authToken}` },
       failOnStatusCode: false,
+    });
+  });
+});
+
+Cypress.Commands.add("getCurrentUser", () => {
+  cy.window().then((window) => {
+    const authToken = window.localStorage.getItem("jwtToken");
+    cy.request({
+      method: "GET",
+      url: `${Cypress.env("apiUrl")}/user`,
+      headers: { Authorization: `Token ${authToken}` },
+      failOnStatusCode: false,
+    }).then((response) => {
+      return response.body;
     });
   });
 });
