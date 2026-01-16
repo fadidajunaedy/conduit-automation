@@ -38,12 +38,10 @@ describe("Editor Page - Positive Cases", function () {
     editorPage.removeTags("test");
     editorPage.submit();
 
-    cy.wait("@addArticle");
-    cy.url().should("contain", "/article/");
-    cy.get("h1").should("contain", nowString);
-
-    cy.url().then(function (textUrl) {
-      const slug = textUrl.split("/article/")[1];
+    cy.wait("@addArticle").then(function (interception) {
+      const slug = interception.response.body.article.slug;
+      cy.url().should("contain", "/article/");
+      cy.get("h1").should("contain", nowString);
       cy.removeArticle(slug);
     });
   });
