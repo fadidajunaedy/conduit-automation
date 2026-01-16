@@ -22,7 +22,7 @@ describe("Editor Page - Positive Cases", function () {
 
     cy.wait("@addArticle").then(function (interception) {
       const slug = interception.response.body.article.slug;
-      cy.url().should("contain", "/article/");
+      cy.url().should("contain", slug);
       cy.get("h1").should("contain", articleData.title);
       cy.removeArticle(slug);
     });
@@ -41,7 +41,7 @@ describe("Editor Page - Positive Cases", function () {
 
     cy.wait("@addArticle").then(function (interception) {
       const slug = interception.response.body.article.slug;
-      cy.url().should("contain", "/article/");
+      cy.url().should("contain", slug);
       cy.get("h1").should("contain", articleData.title);
       cy.removeArticle(slug);
     });
@@ -111,9 +111,10 @@ describe("Editor Page - Negative Cases (Validation)", function () {
     editorPage.submit();
 
     cy.wait("@addArticle").then(function (interception) {
-      cy.url().should("contain", "/article/");
+      const slug = interception.response.body.article.slug;
+      cy.url().should("contain", slug);
       cy.get("h1").should("contain", articleData.title);
-      cy.wrap(interception.response.body.article.slug).as("slugArticle");
+      cy.wrap(slug).as("slugArticle");
     });
 
     editorPage.visit();
