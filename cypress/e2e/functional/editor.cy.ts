@@ -1,3 +1,4 @@
+import { generateArticle } from "../../factories/article-factory";
 import EditorPage from "../../pages/EditorPage";
 
 const editorPage: EditorPage = new EditorPage();
@@ -11,18 +12,18 @@ describe("Editor Page - Positive Cases", function () {
   it("Verify user can publish article with complete valid data", function () {
     cy.intercept("POST", "**/articles").as("addArticle");
 
-    const nowString = new Date().toString();
-    editorPage.fillTitle(`dummy article ${nowString}`);
-    editorPage.fillDescription(`this is dummy article ${nowString}`);
-    editorPage.fillBody("Lorem ipsum dolor si amet");
-    editorPage.fillTags("test");
-    editorPage.fillTags("dummy");
+    const articleData = generateArticle();
+    editorPage.fillTitle(articleData.title);
+    editorPage.fillDescription(articleData.description);
+    editorPage.fillBody(articleData.body);
+    editorPage.fillTags(articleData.tagList[0]);
+    editorPage.fillTags(articleData.tagList[1]);
     editorPage.submit();
 
     cy.wait("@addArticle").then(function (interception) {
       const slug = interception.response.body.article.slug;
       cy.url().should("contain", "/article/");
-      cy.get("h1").should("contain", nowString);
+      cy.get("h1").should("contain", articleData.title);
       cy.removeArticle(slug);
     });
   });
@@ -30,18 +31,18 @@ describe("Editor Page - Positive Cases", function () {
   it("Verify user can publish article without Tags (Optional field)", function () {
     cy.intercept("POST", "**/articles").as("addArticle");
 
-    const nowString = new Date().toString();
-    editorPage.fillTitle(`dummy article ${nowString}`);
-    editorPage.fillDescription(`this is dummy article ${nowString}`);
-    editorPage.fillBody("Lorem ipsum dolor si amet");
-    editorPage.fillTags("test");
-    editorPage.removeTags("test");
+    const articleData = generateArticle();
+    editorPage.fillTitle(articleData.title);
+    editorPage.fillDescription(articleData.description);
+    editorPage.fillBody(articleData.body);
+    editorPage.fillTags(articleData.tagList[0]);
+    editorPage.removeTags(articleData.tagList[0]);
     editorPage.submit();
 
     cy.wait("@addArticle").then(function (interception) {
       const slug = interception.response.body.article.slug;
       cy.url().should("contain", "/article/");
-      cy.get("h1").should("contain", nowString);
+      cy.get("h1").should("contain", articleData.title);
       cy.removeArticle(slug);
     });
   });
@@ -56,10 +57,10 @@ describe("Editor Page - Negative Cases (Validation)", function () {
   it("Verify system rejects submission when Title is empty", function () {
     cy.intercept("POST", "**/articles").as("addArticle");
 
-    const nowString = new Date().toString();
-    editorPage.fillDescription(`this is dummy article ${nowString}`);
-    editorPage.fillBody("Lorem ipsum dolor si amet");
-    editorPage.fillTags("test");
+    const articleData = generateArticle();
+    editorPage.fillDescription(articleData.description);
+    editorPage.fillBody(articleData.body);
+    editorPage.fillTags(articleData.tagList[0]);
     editorPage.submit();
 
     cy.wait("@addArticle");
@@ -71,10 +72,10 @@ describe("Editor Page - Negative Cases (Validation)", function () {
   it("Verify system rejects submission when Description is empty", function () {
     cy.intercept("POST", "**/articles").as("addArticle");
 
-    const nowString = new Date().toString();
-    editorPage.fillTitle(`dummy article ${nowString}`);
-    editorPage.fillBody("Lorem ipsum dolor si amet");
-    editorPage.fillTags("test");
+    const articleData = generateArticle();
+    editorPage.fillTitle(articleData.title);
+    editorPage.fillBody(articleData.body);
+    editorPage.fillTags(articleData.tagList[0]);
     editorPage.submit();
 
     cy.wait("@addArticle");
@@ -86,10 +87,10 @@ describe("Editor Page - Negative Cases (Validation)", function () {
   it("Verify system rejects submission when Body is empty", function () {
     cy.intercept("POST", "**/articles").as("addArticle");
 
-    const nowString = new Date().toString();
-    editorPage.fillTitle(`dummy article ${nowString}`);
-    editorPage.fillDescription(`this is dummy article ${nowString}`);
-    editorPage.fillTags("test");
+    const articleData = generateArticle();
+    editorPage.fillTitle(articleData.title);
+    editorPage.fillDescription(articleData.description);
+    editorPage.fillTags(articleData.tagList[0]);
     editorPage.submit();
 
     cy.wait("@addArticle");
@@ -101,30 +102,27 @@ describe("Editor Page - Negative Cases (Validation)", function () {
   it("Verify article creation behavior with duplicate Title", function () {
     cy.intercept("POST", "**/articles").as("addArticle");
 
-    const dummyTitle = `dummy article ${new Date().toString()}`;
-    editorPage.fillTitle(dummyTitle);
-    editorPage.fillDescription("this is dummy article");
-    editorPage.fillBody("Lorem ipsum dolor si amet");
-    editorPage.fillTags("test");
-    editorPage.fillTags("dummy");
+    const articleData = generateArticle();
+    editorPage.fillTitle(articleData.title);
+    editorPage.fillDescription(articleData.description);
+    editorPage.fillBody(articleData.body);
+    editorPage.fillTags(articleData.tagList[0]);
+    editorPage.fillTags(articleData.tagList[1]);
     editorPage.submit();
 
-    cy.wait("@addArticle");
-    cy.url().should("contain", "/article/");
-    cy.get("h1").should("contain", dummyTitle);
-
-    cy.url().then(function (url) {
-      const slug = url.split("/article/")[1];
-      cy.wrap(slug).as("slugArticle");
+    cy.wait("@addArticle").then(function (interception) {
+      cy.url().should("contain", "/article/");
+      cy.get("h1").should("contain", articleData.title);
+      cy.wrap(interception.response.body.article.slug).as("slugArticle");
     });
 
     editorPage.visit();
 
-    editorPage.fillTitle(dummyTitle);
-    editorPage.fillDescription("this is dummy article");
-    editorPage.fillBody("Lorem ipsum dolor si amet");
-    editorPage.fillTags("test");
-    editorPage.fillTags("dummy");
+    editorPage.fillTitle(articleData.title);
+    editorPage.fillDescription(articleData.description);
+    editorPage.fillBody(articleData.body);
+    editorPage.fillTags(articleData.tagList[0]);
+    editorPage.fillTags(articleData.tagList[1]);
     editorPage.submit();
 
     cy.wait("@addArticle");
