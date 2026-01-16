@@ -23,6 +23,10 @@ class ProfilePage {
     return cy.get(".user-info a[href='/settings']");
   }
 
+  get followProfileButton() {
+    return cy.get("app-follow-button button");
+  }
+
   get myPostsTabLink() {
     return cy.get(".nav-link").contains("My Posts");
   }
