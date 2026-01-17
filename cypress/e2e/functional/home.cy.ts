@@ -148,13 +148,15 @@ describe("Home Page - Functional Logic", function () {
 
   it("Should filter article list by Popular Tags", function () {
     cy.intercept("GET", "**/articles?tag=*").as("tagRequest");
+
     homePage.clickPopularTag("Bondar Academy");
+
     cy.wait("@tagRequest");
     cy.get(".nav-link.active").should("contain", "Bondar Academy");
     cy.get(".article-preview")
       .should("have.length.greaterThan", 0)
-      .each(function ($article) {
-        cy.wrap($article)
+      .each(function (article) {
+        cy.wrap(article)
           .find(".tag-list")
           .scrollIntoView()
           .should("contain.text", "Bondar Academy");
