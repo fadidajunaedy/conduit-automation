@@ -67,11 +67,10 @@ describe("Home Page - Authenticated State", function () {
     homePage.yourFeedLink.should("exist");
   });
 
-  it("Should allow user to toggle 'Favorite' (Add Favorite)", function () {
-    cy.intercept("POST", "**/favorite").as("addFavorite");
+  it.only("Should allow user to toggle 'Favorite' (Add Favorite)", function () {
+    cy.intercept("POST", "**/articles/**/favorite").as("addFavoriteArticle");
 
     cy.removeFavoriteArticle(this.targetArticle.slug);
-
     cy.reload();
 
     homePage
@@ -79,15 +78,20 @@ describe("Home Page - Authenticated State", function () {
       .should("not.have.class", "btn-primary");
     homePage
       .getFavoriteCount(this.targetArticle.title)
-      .then(function (initialNumber) {
+      .then(function (initialCount) {
+        cy.log("Initial count: " + initialCount);
         homePage.toggleFavorite(this.targetArticle.title);
 
-        cy.wait("@addFavorite");
+        cy.wait("@addFavoriteArticle");
+        cy.reload();
+
         homePage
           .getFavoriteCount(this.targetArticle.title)
-          .then(function (newNumber) {
-            expect(newNumber).to.be.greaterThan(initialNumber);
-            expect(newNumber).to.equal(initialNumber + 1);
+          .then(function (newCount) {
+            cy.log("New count: " + newCount);
+
+            expect(newCount).to.be.greaterThan(initialCount);
+            expect(newCount).to.equal(initialCount + 1);
           });
       });
   });
