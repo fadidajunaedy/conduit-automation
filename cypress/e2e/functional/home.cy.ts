@@ -1,8 +1,6 @@
 import HomePage from "../../pages/HomePage";
 
 const homePage: HomePage = new HomePage();
-const targetArticle =
-  "Mastering Knowledge with Self-Assessments: Identifying and Bridging Learning Gaps in Education";
 
 describe("Home Page - Guest State", function () {
   beforeEach(function () {
@@ -21,7 +19,7 @@ describe("Home Page - Guest State", function () {
   });
 
   it("Should redirect to Registration page when clicking 'Favorite' (Heart) button", function () {
-    homePage.toggleFavorite(targetArticle);
+    homePage.toggleFavorite(this.targetArticle.title);
     cy.url().should("contain", "/register");
     cy.get("h1").should("contain", "Sign up");
   });
@@ -49,7 +47,12 @@ describe("Home Page - Guest State", function () {
 
 describe("Home Page - Authenticated State", function () {
   beforeEach(function () {
-    cy.login("email@test.com", "password");
+    cy.fixture("target-article.json").as("targetArticle");
+    cy.fixture("user.json").as("userData");
+  });
+
+  beforeEach(function () {
+    cy.login(this.userData.email, this.userData.password);
     homePage.visit();
   });
 
@@ -67,53 +70,57 @@ describe("Home Page - Authenticated State", function () {
   it("Should allow user to toggle 'Favorite' (Add Favorite)", function () {
     cy.intercept("POST", "**/favorite").as("addFavorite");
 
-    homePage.getArticleSlug(targetArticle).then(function (slug) {
-      cy.removeFavoriteArticle(slug);
-    });
+    cy.removeFavoriteArticle(this.targetArticle.slug);
 
     cy.reload();
 
     homePage
-      .getFavoriteButton(targetArticle)
+      .getFavoriteButton(this.targetArticle.title)
       .should("not.have.class", "btn-primary");
-    homePage.getFavoriteCount(targetArticle).then(function (initialNumber) {
-      homePage.toggleFavorite(targetArticle);
+    homePage
+      .getFavoriteCount(this.targetArticle.title)
+      .then(function (initialNumber) {
+        homePage.toggleFavorite(this.targetArticle.title);
 
-      cy.wait("@addFavorite");
-      homePage.getFavoriteCount(targetArticle).then(function (newNumber) {
-        expect(newNumber).to.be.greaterThan(initialNumber);
-        expect(newNumber).to.equal(initialNumber + 1);
+        cy.wait("@addFavorite");
+        homePage
+          .getFavoriteCount(this.targetArticle.title)
+          .then(function (newNumber) {
+            expect(newNumber).to.be.greaterThan(initialNumber);
+            expect(newNumber).to.equal(initialNumber + 1);
+          });
       });
-    });
   });
 
   it("Should allow user to toggle 'Favorite' (Remove Favorite)", function () {
     cy.intercept("DELETE", "**/favorite").as("removeFavorite");
 
-    homePage.getArticleSlug(targetArticle).then(function (slug) {
-      cy.addFavoriteArticle(slug);
-    });
+    cy.addFavoriteArticle(this.targetArticle.slug);
 
     cy.reload();
 
     homePage
-      .getFavoriteButton(targetArticle)
+      .getFavoriteButton(this.targetArticle.title)
       .should("have.class", "btn-primary");
-    homePage.getFavoriteCount(targetArticle).then(function (initialNumber) {
-      homePage.toggleFavorite(targetArticle);
+    homePage
+      .getFavoriteCount(this.targetArticle.title)
+      .then(function (initialNumber) {
+        homePage.toggleFavorite(this.targetArticle.title);
 
-      cy.wait("@removeFavorite");
-      homePage.getFavoriteCount(targetArticle).then(function (newNumber) {
-        expect(newNumber).to.be.lessThan(initialNumber);
-        expect(newNumber).to.equal(initialNumber - 1);
+        cy.wait("@removeFavorite");
+        homePage
+          .getFavoriteCount(this.targetArticle.title)
+          .then(function (newNumber) {
+            expect(newNumber).to.be.lessThan(initialNumber);
+            expect(newNumber).to.equal(initialNumber - 1);
+          });
       });
-    });
   });
 
   it("Should navigate to Article Detail page when clicking an article title", function () {
-    homePage.openArticle(targetArticle);
+    homePage.openArticle(this.targetArticle.title);
     cy.url().should("contain", "/article/");
-    cy.get("h1").should("contain", targetArticle);
+    cy.get("h1").should("contain", this.targetArticle.title);
   });
 
   it("Should display 'No articles are here... yet.' when feed is empty", function () {
@@ -124,7 +131,12 @@ describe("Home Page - Authenticated State", function () {
 
 describe("Home Page - Functional Logic", function () {
   beforeEach(function () {
-    cy.login("email@test.com", "password");
+    cy.fixture("target-article.json").as("targetArticle");
+    cy.fixture("user.json").as("userData");
+  });
+
+  beforeEach(function () {
+    cy.login(this.userData.email, this.userData.password);
     homePage.visit();
   });
 
