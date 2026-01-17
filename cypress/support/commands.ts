@@ -64,7 +64,7 @@ declare namespace Cypress {
     login(email: string, password: string): Chainable<void>;
     addFavoriteArticle(slug: string): Chainable<void>;
     removeFavoriteArticle(slug: string): Chainable<void>;
-    updateUser(userSettingsObj: UserSettings): Chainable<void>;
+    updateUser(userSettings: UserSettings): Chainable<void>;
     followProfile(username: string): Chainable<void>;
     unfollowProfile(username: string): Chainable<void>;
     addFavoriteArticle(slug: string): Chainable<void>;
@@ -122,7 +122,7 @@ Cypress.Commands.add("removeFavoriteArticle", (slug) => {
   });
 });
 
-Cypress.Commands.add("updateUser", (userSettingsObj) => {
+Cypress.Commands.add("updateUser", (userSettings) => {
   cy.window().then((window) => {
     const authToken = window.localStorage.getItem("jwtToken");
     cy.request({
@@ -130,7 +130,7 @@ Cypress.Commands.add("updateUser", (userSettingsObj) => {
       url: `${Cypress.env("apiUrl")}/user`,
       headers: { Authorization: `Token ${authToken}` },
       body: {
-        user: userSettingsObj,
+        user: userSettings,
       },
       failOnStatusCode: false,
     });
