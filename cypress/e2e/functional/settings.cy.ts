@@ -4,7 +4,11 @@ const settingsPage: SettingsPage = new SettingsPage();
 
 describe("Settings Page - Functional Update", function () {
   beforeEach(function () {
-    cy.login("fadidajunaedy@mail.com", "qq332211");
+    cy.fixture("user.json").as("userData");
+  });
+
+  beforeEach(function () {
+    cy.login(this.userData.email, this.userData.password);
     settingsPage.visit();
   });
 
@@ -97,7 +101,11 @@ describe("Settings Page - Functional Update", function () {
 
 describe("Settings Page - Session Management", function () {
   beforeEach(function () {
-    cy.login("fadidajunaedy@mail.com", "qq332211");
+    cy.fixture("user.json").as("userData");
+  });
+
+  beforeEach(function () {
+    cy.login(this.userData.email, this.userData.password);
     settingsPage.visit();
   });
 
