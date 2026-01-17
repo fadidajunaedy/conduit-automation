@@ -1,9 +1,9 @@
 import SignInPage from "../../pages/SignInPage";
 
-describe("Sign In Page", () => {
+describe("Sign In Page", function () {
   const signInPage: SignInPage = new SignInPage();
 
-  beforeEach(() => {
+  beforeEach(function () {
     cy.fixture("user").as("userData");
   });
 
@@ -18,7 +18,7 @@ describe("Sign In Page", () => {
       .should("exist");
   });
 
-  it("Should not be able to Sign In with Email or Password invalid", () => {
+  it("Should not be able to Sign In with Email or Password invalid", function () {
     signInPage.visit();
     signInPage.fillLoginForm("random_email@mail.com", "random_password");
     signInPage.submit();
