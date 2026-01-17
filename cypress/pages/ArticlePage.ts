@@ -8,13 +8,7 @@ class ArticlePage {
   }
 
   get title() {
-    return cy
-      .get(".article-page")
-      .find("h1")
-      .invoke("text")
-      .then((text) => {
-        return text.trim();
-      });
+    return cy.get(".article-page").find("h1");
   }
 
   get author() {
