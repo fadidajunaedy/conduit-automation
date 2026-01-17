@@ -39,12 +39,24 @@ class EditorPage {
     this.titleInput.type(title);
   }
 
+  clearTitle() {
+    this.titleInput.clear();
+  }
+
   fillDescription(description: string) {
     this.descriptionInput.type(description);
   }
 
+  clearDescription() {
+    this.descriptionInput.clear();
+  }
+
   fillBody(body: string) {
     this.bodyInput.type(body);
+  }
+
+  clearBody() {
+    this.bodyInput.clear();
   }
 
   fillTags(tagName: string) {
