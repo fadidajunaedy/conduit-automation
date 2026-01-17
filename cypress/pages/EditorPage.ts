@@ -31,6 +31,10 @@ class EditorPage {
     cy.visit("/editor");
   }
 
+  visitEdit(slug: string) {
+    cy.visit(`/editor/${slug}`);
+  }
+
   fillTitle(title: string) {
     this.titleInput.type(title);
   }

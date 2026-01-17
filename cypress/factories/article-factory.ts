@@ -9,7 +9,7 @@ export function generateArticle(): ArticleData {
   const uniqueId = Date.now().toString();
   return {
     title: `Test Article ${uniqueId}`,
-    description: "dummy description",
+    description: `dummy description ${uniqueId}`,
     body: "dummy body",
     tagList: ["Dummy Tag 1", "Dummy Tag 2"],
   };
