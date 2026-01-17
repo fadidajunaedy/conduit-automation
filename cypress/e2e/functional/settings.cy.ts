@@ -103,7 +103,7 @@ describe("Settings Page - Session Management", function () {
 
   it("Verify user is redirected to Home page after Logout", function () {
     settingsPage.logout();
-    cy.url().should("equal", "https://conduit.bondaracademy.com/");
+    cy.url().should("equal", `${Cypress.config("baseUrl")}/`);
 
     cy.window().then(function (window) {
       const authToken = window.localStorage.getItem("jwtToken");
