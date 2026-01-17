@@ -67,7 +67,7 @@ describe("Home Page - Authenticated State", function () {
     homePage.yourFeedLink.should("exist");
   });
 
-  it.only("Should allow user to toggle 'Favorite' (Add Favorite)", function () {
+  it("Should allow user to toggle 'Favorite' (Add Favorite)", function () {
     cy.intercept("POST", "**/articles/**/favorite").as("addFavoriteArticle");
 
     cy.removeFavoriteArticle(this.targetArticle.slug);
@@ -96,11 +96,12 @@ describe("Home Page - Authenticated State", function () {
       });
   });
 
-  it("Should allow user to toggle 'Favorite' (Remove Favorite)", function () {
-    cy.intercept("DELETE", "**/favorite").as("removeFavorite");
+  it.only("Should allow user to toggle 'Favorite' (Remove Favorite)", function () {
+    cy.intercept("DELETE", "**/articles/**/favorite").as(
+      "removeFavoriteArticle"
+    );
 
     cy.addFavoriteArticle(this.targetArticle.slug);
-
     cy.reload();
 
     homePage
@@ -108,15 +109,20 @@ describe("Home Page - Authenticated State", function () {
       .should("have.class", "btn-primary");
     homePage
       .getFavoriteCount(this.targetArticle.title)
-      .then(function (initialNumber) {
+      .then(function (initialCount) {
+        cy.log("Initial count: " + initialCount);
         homePage.toggleFavorite(this.targetArticle.title);
 
-        cy.wait("@removeFavorite");
+        cy.wait("@removeFavoriteArticle");
+        cy.reload();
+
         homePage
           .getFavoriteCount(this.targetArticle.title)
-          .then(function (newNumber) {
-            expect(newNumber).to.be.lessThan(initialNumber);
-            expect(newNumber).to.equal(initialNumber - 1);
+          .then(function (newCount) {
+            cy.log("New count: " + newCount);
+
+            expect(newCount).to.be.lessThan(initialCount);
+            expect(newCount).to.equal(initialCount - 1);
           });
       });
   });
