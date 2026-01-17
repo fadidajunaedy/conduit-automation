@@ -6,6 +6,7 @@ const targetArticle =
 
 describe("Home Page - Guest State", function () {
   beforeEach(function () {
+    cy.fixture("target-article.json").as("targetArticle");
     homePage.visit();
   });
 
