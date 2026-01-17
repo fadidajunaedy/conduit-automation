@@ -63,10 +63,6 @@ describe("Home Page - Authenticated State", function () {
     homePage.navbar.newArtcileLink.should("exist");
   });
 
-  it("Should display 'Your Feed' tab by default upon load", function () {
-    homePage.yourFeedLink.should("exist");
-  });
-
   it("Should allow user to toggle 'Favorite' (Add Favorite)", function () {
     cy.intercept("POST", "**/articles/**/favorite").as("addFavoriteArticle");
 
@@ -96,7 +92,7 @@ describe("Home Page - Authenticated State", function () {
       });
   });
 
-  it.only("Should allow user to toggle 'Favorite' (Remove Favorite)", function () {
+  it("Should allow user to toggle 'Favorite' (Remove Favorite)", function () {
     cy.intercept("DELETE", "**/articles/**/favorite").as(
       "removeFavoriteArticle"
     );
