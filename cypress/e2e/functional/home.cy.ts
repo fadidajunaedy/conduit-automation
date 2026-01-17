@@ -4,34 +4,34 @@ const homePage: HomePage = new HomePage();
 const targetArticle =
   "Mastering Knowledge with Self-Assessments: Identifying and Bridging Learning Gaps in Education";
 
-describe("Home Page - Guest State", () => {
-  beforeEach(() => {
+describe("Home Page - Guest State", function () {
+  beforeEach(function () {
     homePage.visit();
   });
 
-  it("Should display 'Sign in' and 'Sign up' buttons in Navbar", () => {
+  it("Should display 'Sign in' and 'Sign up' buttons in Navbar", function () {
     homePage.navbar.profileLink.should("not.exist");
     homePage.navbar.SignInLink.should("exist");
     homePage.navbar.SignUpLink.should("exist");
   });
 
-  it("Should display 'Global Feed' tab by default", () => {
+  it("Should display 'Global Feed' tab by default", function () {
     homePage.globalFeedLink.should("have.class", "active");
   });
 
-  it("Should redirect to Registration page when clicking 'Favorite' (Heart) button", () => {
+  it("Should redirect to Registration page when clicking 'Favorite' (Heart) button", function () {
     homePage.toggleFavorite(targetArticle);
     cy.url().should("contain", "/register");
     cy.get("h1").should("contain", "Sign up");
   });
 
-  it("Should redirect to Login page when clicking 'Sign in' link", () => {
+  it("Should redirect to Login page when clicking 'Sign in' link", function () {
     homePage.navbar.clickSignInLink();
     cy.url().should("contain", "/login");
     cy.get("h1").should("contain", "Sign in");
   });
 
-  it("Should clear tag filter when clicking 'Global Feed' tab again", () => {
+  it("Should clear tag filter when clicking 'Global Feed' tab again", function () {
     cy.intercept("GET", "**/articles?tag=*").as("getArticlesByTag");
     cy.intercept("GET", "**/articles?limit=*").as("getGlobalArticlesFeed");
 
@@ -47,26 +47,26 @@ describe("Home Page - Guest State", () => {
 });
 
 describe("Home Page - Authenticated State", function () {
-  beforeEach(() => {
+  beforeEach(function () {
     cy.login("email@test.com", "password");
     homePage.visit();
   });
 
-  it("Should display User Profile and 'New Article' buttons in Navbar", () => {
+  it("Should display User Profile and 'New Article' buttons in Navbar", function () {
     homePage.navbar.SignInLink.should("not.exist");
     homePage.navbar.SignUpLink.should("not.exist");
     homePage.navbar.profileLink.should("exist");
     homePage.navbar.newArtcileLink.should("exist");
   });
 
-  it("Should display 'Your Feed' tab by default upon load", () => {
+  it("Should display 'Your Feed' tab by default upon load", function () {
     homePage.yourFeedLink.should("exist");
   });
 
-  it("Should allow user to toggle 'Favorite' (Add Favorite)", () => {
+  it("Should allow user to toggle 'Favorite' (Add Favorite)", function () {
     cy.intercept("POST", "**/favorite").as("addFavorite");
 
-    homePage.getArticleSlug(targetArticle).then((slug) => {
+    homePage.getArticleSlug(targetArticle).then(function (slug) {
       cy.removeFavoriteArticle(slug);
     });
 
@@ -75,21 +75,21 @@ describe("Home Page - Authenticated State", function () {
     homePage
       .getFavoriteButton(targetArticle)
       .should("not.have.class", "btn-primary");
-    homePage.getFavoriteCount(targetArticle).then((initialNumber) => {
+    homePage.getFavoriteCount(targetArticle).then(function (initialNumber) {
       homePage.toggleFavorite(targetArticle);
 
       cy.wait("@addFavorite");
-      homePage.getFavoriteCount(targetArticle).then((newNumber) => {
+      homePage.getFavoriteCount(targetArticle).then(function (newNumber) {
         expect(newNumber).to.be.greaterThan(initialNumber);
         expect(newNumber).to.equal(initialNumber + 1);
       });
     });
   });
 
-  it("Should allow user to toggle 'Favorite' (Remove Favorite)", () => {
+  it("Should allow user to toggle 'Favorite' (Remove Favorite)", function () {
     cy.intercept("DELETE", "**/favorite").as("removeFavorite");
 
-    homePage.getArticleSlug(targetArticle).then((slug) => {
+    homePage.getArticleSlug(targetArticle).then(function (slug) {
       cy.addFavoriteArticle(slug);
     });
 
@@ -98,43 +98,43 @@ describe("Home Page - Authenticated State", function () {
     homePage
       .getFavoriteButton(targetArticle)
       .should("have.class", "btn-primary");
-    homePage.getFavoriteCount(targetArticle).then((initialNumber) => {
+    homePage.getFavoriteCount(targetArticle).then(function (initialNumber) {
       homePage.toggleFavorite(targetArticle);
 
       cy.wait("@removeFavorite");
-      homePage.getFavoriteCount(targetArticle).then((newNumber) => {
+      homePage.getFavoriteCount(targetArticle).then(function (newNumber) {
         expect(newNumber).to.be.lessThan(initialNumber);
         expect(newNumber).to.equal(initialNumber - 1);
       });
     });
   });
 
-  it("Should navigate to Article Detail page when clicking an article title", () => {
+  it("Should navigate to Article Detail page when clicking an article title", function () {
     homePage.openArticle(targetArticle);
     cy.url().should("contain", "/article/");
     cy.get("h1").should("contain", targetArticle);
   });
 
-  it("Should display 'No articles are here... yet.' when feed is empty", () => {
+  it("Should display 'No articles are here... yet.' when feed is empty", function () {
     homePage.clickYourFeedLink();
     homePage.yourFeedLink.should("have.class", "active");
   });
 });
 
-describe("Home Page - Functional Logic", () => {
-  beforeEach(() => {
+describe("Home Page - Functional Logic", function () {
+  beforeEach(function () {
     cy.login("email@test.com", "password");
     homePage.visit();
   });
 
-  it("Should filter article list by Popular Tags", () => {
+  it("Should filter article list by Popular Tags", function () {
     cy.intercept("GET", "**/articles?tag=*").as("tagRequest");
     homePage.clickPopularTag("Bondar Academy");
     cy.wait("@tagRequest");
     cy.get(".nav-link.active").should("contain", "Bondar Academy");
     cy.get(".article-preview")
       .should("have.length.greaterThan", 0)
-      .each(($article) => {
+      .each(function ($article) {
         cy.wrap($article)
           .find(".tag-list")
           .scrollIntoView()
