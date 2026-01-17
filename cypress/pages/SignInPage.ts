@@ -16,14 +16,18 @@ class SignInPage {
   }
 
   fillEmail(email: string) {
+    this.emailInput.clear();
     this.emailInput.type(email);
   }
 
   fillPassword(password: string) {
+    this.passwordInput.clear();
     this.passwordInput.type(password);
   }
 
   fillLoginForm(email: string, password: string) {
+    this.emailInput.clear();
+    this.passwordInput.clear();
     this.emailInput.type(email);
     this.passwordInput.type(password);
   }
