@@ -54,7 +54,11 @@ describe("Editor Page - Positive Cases", function () {
 
 describe("Editor Page - Negative Cases (Validation)", function () {
   beforeEach(function () {
-    cy.login("fadidajunaedy@mail.com", "qq332211");
+    cy.fixture("user.json").as("userData");
+  });
+
+  beforeEach(function () {
+    cy.login(this.userData.email, this.userData.password);
     editorPage.visit();
   });
 
