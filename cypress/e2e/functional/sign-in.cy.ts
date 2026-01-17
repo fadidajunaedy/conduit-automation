@@ -11,7 +11,7 @@ describe("Sign In Page", function () {
   it("Should be able to Sign In with valid credentials", function () {
     signInPage.fillLoginForm(this.userData.email, this.userData.password);
     signInPage.submit();
-    cy.url().should("equal", "https://conduit.bondaracademy.com/");
+    cy.url().should("equal", `${Cypress.config("baseUrl")}/`);
     cy.window()
       .its("localStorage")
       .invoke("getItem", "jwtToken")
