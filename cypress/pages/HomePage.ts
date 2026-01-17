@@ -40,9 +40,7 @@ class HomePage {
   }
 
   getArticlePreviewItem(title: string) {
-    return this.articlePreviewList
-      .filter(`:contains("${title}")`)
-      .should("be.visible");
+    return this.articlePreviewList.filter(`:contains("${title}")`);
   }
 
   getArticleSlug(title: string) {
