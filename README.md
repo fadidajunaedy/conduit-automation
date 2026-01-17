@@ -109,6 +109,14 @@ This repository contains a comprehensive test automation suite for the **Conduit
 
 - Verify user is redirected to Home page after Logout
 
+### User Journey
+
+**User Journeys**
+
+- The Author's Lifecycle (Create > Verify in Feed > Edit > Delete)
+- The Fan Interaction
+- Identity & Security Update
+
 ## What I Learned
 
 ### Hybrid Testing Strategy
