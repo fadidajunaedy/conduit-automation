@@ -5,10 +5,10 @@ describe("Sign In Page", function () {
 
   beforeEach(function () {
     cy.fixture("user").as("userData");
+    signInPage.visit();
   });
 
   it("Should be able to Sign In with valid credentials", function () {
-    signInPage.visit();
     signInPage.fillLoginForm(this.userData.email, this.userData.password);
     signInPage.submit();
     cy.url().should("equal", "https://conduit.bondaracademy.com/");
@@ -19,7 +19,6 @@ describe("Sign In Page", function () {
   });
 
   it("Should not be able to Sign In with Email or Password invalid", function () {
-    signInPage.visit();
     signInPage.fillLoginForm("random_email@mail.com", "random_password");
     signInPage.submit();
 
@@ -29,15 +28,12 @@ describe("Sign In Page", function () {
     );
   });
 
-  // Not using arrow function because they don't have .this binding
   it("Should not be able to click Sign In button when email is blank", function () {
-    signInPage.visit();
     signInPage.fillPassword(this.userData.password);
     signInPage.signInButton.should("be.disabled");
   });
 
   it("Should not be able to click Sign In button when password is blank", function () {
-    signInPage.visit();
     signInPage.fillEmail(this.userData.email);
     signInPage.signInButton.should("be.disabled");
   });
