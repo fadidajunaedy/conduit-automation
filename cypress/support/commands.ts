@@ -91,6 +91,7 @@ Cypress.Commands.add("login", (email, password) => {
           password,
         },
       },
+      failOnStatusCode: false,
     }).then((response) => {
       window.localStorage.setItem("jwtToken", response.body.user.token);
       return response.body.user.token;
