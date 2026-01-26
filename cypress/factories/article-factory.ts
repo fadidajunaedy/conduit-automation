@@ -1,11 +1,6 @@
-interface ArticleData {
-  title: string;
-  description: string;
-  body: string;
-  tagList: string[];
-}
+import { Article } from "../support/types/articles";
 
-export function generateArticle(): ArticleData {
+export function generateArticle(): Article {
   const uniqueId = Date.now().toString();
   return {
     title: `Test Article ${uniqueId}`,

@@ -1,82 +1,27 @@
-declare namespace Cypress {
-  interface UserSettings {
-    image?: string;
-    username?: string;
-    bio?: string;
-    email?: string;
-    password?: string;
-  }
+import { UserSettings, CurrentUser } from "./types/user";
+import { Article, ArticleResponseBody } from "./types/articles";
+import { CommentResponseBody } from "./types/comment";
 
-  interface CommentResponseBody {
-    comment: {
-      id: number;
-      createdAt: string;
-      updatedAt: string;
-      body: string;
-      author: {
-        username: string;
-        bio: string;
-        image: string;
-        following: boolean;
-      };
-    };
-  }
-
-  interface ArticleRequestBody {
-    title: string;
-    description: string;
-    body: string;
-    tagList: string[];
-  }
-
-  interface ArticleResponseBody {
-    article: {
-      slug: string;
-      title: string;
-      description: string;
-      body: string;
-      tagList: string[];
-      createdAt: string;
-      updatedAt: string;
-      favorited: false;
-      favoritesCount: number;
-      author: {
-        username: string;
-        bio: string;
-        image: string;
-        following: boolean;
-      };
-    };
-  }
-
-  interface CurrentUser {
-    user: {
-      id: number;
-      email: string;
-      username: string;
-      bio: string;
-      image: string;
-      token: string;
-    };
-  }
-
-  interface Chainable {
-    login(email: string, password: string): Chainable<void>;
-    addFavoriteArticle(slug: string): Chainable<void>;
-    removeFavoriteArticle(slug: string): Chainable<void>;
-    updateUser(userSettings: UserSettings): Chainable<void>;
-    followProfile(username: string): Chainable<void>;
-    unfollowProfile(username: string): Chainable<void>;
-    addFavoriteArticle(slug: string): Chainable<void>;
-    removeFavoriteArticle(slug: string): Chainable<void>;
-    addCommentArticle(
-      slug: string,
-      body: string
-    ): Chainable<CommentResponseBody>;
-    removeCommentArticle(slug: string, commentId: number): Chainable<void>;
-    addArticle(body: ArticleRequestBody): Chainable<ArticleResponseBody>;
-    removeArticle(slug: string): Chainable<void>;
-    getCurrentUser(): Chainable<CurrentUser>;
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      login(email: string, password: string): Chainable<void>;
+      addFavoriteArticle(slug: string): Chainable<void>;
+      removeFavoriteArticle(slug: string): Chainable<void>;
+      updateUser(userSettings: UserSettings): Chainable<void>;
+      followProfile(username: string): Chainable<void>;
+      unfollowProfile(username: string): Chainable<void>;
+      addFavoriteArticle(slug: string): Chainable<void>;
+      removeFavoriteArticle(slug: string): Chainable<void>;
+      addCommentArticle(
+        slug: string,
+        body: string,
+      ): Chainable<CommentResponseBody>;
+      removeCommentArticle(slug: string, commentId: number): Chainable<void>;
+      addArticle(body: Article): Chainable<ArticleResponseBody>;
+      removeArticle(slug: string): Chainable<void>;
+      getCurrentUser(): Chainable<CurrentUser>;
+    }
   }
 }
 
@@ -84,7 +29,7 @@ Cypress.Commands.add("login", (email, password) => {
   cy.window().then((window) => {
     cy.request({
       method: "POST",
-      url: "https://conduit-api.bondaracademy.com/api/users/login",
+      url: `${Cypress.env("apiUrl")}/users/login`,
       body: {
         user: {
           email,
